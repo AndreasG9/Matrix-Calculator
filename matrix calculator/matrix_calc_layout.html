@@ -43,49 +43,80 @@
        </div>
       </form>
     </div>
-<!-- 
-    <div class="">
-      <span>A</span>
-      <span>B</span>
-    </div> -->
 
-    <div class="matrix-grid-container">
-      <!-- <div class="matrix-grid-a"></div> -->
-      <form action="" class="matrix-grid-a">
-        <!-- DOM, insert matrix a here-->
-      </form>
-      <span>
-        <select name="" id="matrix-operator" class="bold">
+    <div class="matrices-container">
+      <div class="">
+        <span class="matrix-label">A</span> 
+        <form action="" class="matrix-grid-a">
+          <!-- DOM, insert matrix a here-->
+        </form>
+
+          <div class="matrix-buttons">
+
+            <button id="matrix-a-det-btn" class="pointer button">det(A)</button>
+            <button id="matrix-a-inverse-btn" class="pointer button">A<sup>-1</sup></button>
+
+            <button id="matrix-a-raised-btn" class="pointer ">A<sup><input type="number" id="matrix-a-raised-power" ></sup></button>
+            
+            <button id="matrix-a-transpose-btn" class="pointer ">TRANSPOSE  <br>   A</button>
+            <button type="submit" id="matrix-a-clear-btn" class="pointer ">CLEAR A</button>
+
+          </div>
+        </div>
+
+      <div class="operator">
+        <button>SWAP</button>
+        <select name="" id="matrix-operator" class="bold pointer">
           <option value="*" class="bold">*</option>
           <option value="+" class="bold">+</option>
           <option value="-" class="bold">-</option>
         </select>
-      </span>
-      <form action="" class="matrix-grid-b">
-        <!-- DOM, insert matrix b here-->
-      </form>
+      </div>
+
+      <div class="matrix-grid-b-container">
+        <span class="matrix-label">B</span> 
+        <form action="" class="matrix-grid-b">
+          <!-- DOM, insert matrix b here-->
+        </form>
+
+        <div class="matrix-buttons">
+
+          <button id="matrix-b-det-btn" class="pointer">det(B)</button>
+          <button id="matrix-b-inverse-btn" class="pointer  ">B<sup>-1</sup></button>
+
+          <button id="matrix-b-raised-btn" class="pointer ">B<sup><input type="number" id="matrix-b-raised-power" ></sup></button>
+          
+          <button id="matrix-b-transpose-btn" class="pointer ">TRANSPOSE B</button>
+          <button type="submit" id="matrix-b-clear-btn" class="pointer ">CLEAR B</button>
+
+        </div>
+      </div>
 
       <button type="submit" id="compute-btn" class="pointer">COMPUTE</button> 
     </div>
 
 
+    <!-- <button type="submit" id="compute-btn" class="pointer">COMPUTE</button>  -->
+
+
+<!-- 
     <div class="matrix-buttons-container">
-      <div class="">
+      <div class="matrix-a-buttons">
         <div>
-          <button id="matrix-a-det-btn" class="pointer ">det(A)</button>
-          <button id="matrix-a-inverse-btn" class="pointer ">A<sup>-1</sup></button>
+          <button id="matrix-a-det-btn" class="pointer button">det(A)</button>
+          <button id="matrix-a-inverse-btn" class="pointer button">A<sup>-1</sup></button>
         </div>
-        <button id="matrix-a-raised" class="pointer ">A<sup><input type="number" id="matrix-a-raised-power" ></sup></button>
+        <button id="matrix-a-raised-btn" class="pointer ">A<sup><input type="number" id="matrix-a-raised-power" ></sup></button>
         
         <div>
-          <button id="matrix-a-transpose-btn" class="pointer ">TRANSPOSE A</button>
+          <button id="matrix-a-transpose-btn" class="pointer ">TRANSPOSE  <br>   A</button>
           <button type="submit" id="matrix-a-clear-btn" class="pointer ">CLEAR A</button>
         </div>
-      </div>
+      </div> -->
 
-      <div class="">
+      <!-- <div class="">
         <div>
-          <button id="matrix-b-det-btn" class="pointer ">det(B)</button>
+          <button id="matrix-b-det-btn" class="pointer">det(B)</button>
           <button id="matrix-b-inverse-btn" class="pointer  ">B<sup>-1</sup></button>
         </div>
         <button id="matrix-b-raised" class="pointer ">B<sup><input type="number" id="matrix-b-raised-power" ></sup></button>
@@ -95,15 +126,15 @@
           <button type="submit" id="matrix-b-clear-btn" class="pointer ">CLEAR B</button>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
     <!-- <button type="submit" id="compute-btn" class="pointer">COMPUTE</button> -->
 
 
-    <div class="solution-container"></div>
+  <div class="solution-container"></div>
 
-  </div>
+</div>
 
   <div class="warning-box" >
     <div id="warning-msg" >
