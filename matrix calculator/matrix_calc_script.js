@@ -2,11 +2,6 @@
 
 // save matrix input 
 
-// class Matrix_Calc{
-//   constructor(); 
-// }
-
-// SET NEW SIZE ON ONLY ONE DONT DELETE THE OTHER ************ **
 
 /* 
  matrix a: m x n 
@@ -37,21 +32,12 @@ document.documentElement.style.setProperty("--a-n", 2);
 document.documentElement.style.setProperty("--b-m", 2);
 document.documentElement.style.setProperty("--b-n", 2);
 
-
 matrix_grid_a.classList.add("template-grid-a", "template"); 
 matrix_grid_b.classList.add("template-grid-b", "template"); 
 
-// let root = document.documentElement; 
-// root = document.querySelector("template-grid"); 
-
-// function set_attr(element, attr){
-//   for(var key in attr) {
-//     element.setAttribute(key, attr[key]);
-//   }
-// }
-
 a_visible = true, b_visible = true;  // 2x2 is displayed for both matrices 
 am_input = 2, an_input = 2, bm_input = 2, bn_input = 2; 
+
 
 
 // ------------------------- Get matrix size -----------------------------
@@ -68,21 +54,23 @@ create_btn.addEventListener("click", () => {
   console.log(`MATRIX A: ${am_input} x ${an_input}\n MATRIX B: ${bm_input} x ${bn_input}`); 
 
   // each matrix, input none or m AND n for entry 
-  if((am_input && !an_input) || (an_input && !am_input)) alert("missing matrix a dimension"); 
-  else if((bm_input && !bn_input) || (bn_input && !bm_input)) alert("missing matrix b dimension"); 
-
-  display_matrix(am_input, an_input, bm_input, bn_input); 
+  if((am_input && !an_input) || (an_input && !am_input)) warning_msg("missing <i><u>matrix A</u></i> dimension");
+  else if((bm_input && !bn_input) || (bn_input && !bm_input)) warning_msg("missing <i><u>matrix B</u></i> dimension");
+  else if(!(am_input && bm_input && an_input && bn_input))warning_msg("default: matrix A: 2x2 <br> matrix B: 2x2"); 
+  else display_matrix(am_input, an_input, bm_input, bn_input); 
 }); 
 
 // -------------------------- Display correct matrix ---------------------------
 function display_matrix(am_input, an_input, bm_input, bn_input){
   // display matrix a, b, or both 
 
+
   if((am_input || an_input)){
     // show matrix a 
     make_matrix(matrix_grid_a, am_input, an_input); 
     document.documentElement.style.setProperty("--a-m", am_input); // adjust css var to create correct template rows/ cols after func compelte / format grid 
     document.documentElement.style.setProperty("--a-n", an_input); 
+
   } 
 
   if((bm_input || bn_input)){
@@ -146,12 +134,10 @@ function hide_solution_box(){
   solution_box.style.visibility = "hidden";
 }
 
-
-
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
 function read_input(matrix_grid, m, n){
   // all different calculations will call this func to get data in 1d array. 
-
+  
   let matrix_temp = []; 
 
   for(i=0; i<(m*n); ++i){
@@ -159,14 +145,27 @@ function read_input(matrix_grid, m, n){
     matrix_temp.push(parseInt(matrix_grid.elements[i].value)); 
   }
 
-  if(matrix_temp.includes(NaN)){
-    // check missing element 
-    // warning_msg("Missing an element"); 
-    return; 
-  }
-
   return matrix_temp; 
 }
+
+// ------------------------- SWAP -----------------------------
+const swap_btn = document.querySelector("#swap-btn");
+
+swap_btn.addEventListener("click", () => {
+  // matrix A <=> matrix B  
+
+  if(a_visible) matrix_a = read_input(matrix_grid_a, am_input, an_input); 
+  if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
+
+  const err = missing_element(matrix_a, matrix_b); 
+  if(err) return; 
+
+
+  // ... 
+
+}); 
+
+
 
 // -------------------------- Compute ---------------------------
 const compute_btn = document.querySelector("#compute-btn");
@@ -175,23 +174,19 @@ const operator = document.querySelector("#matrix-operator");
 compute_btn.addEventListener("click", () => {
   // read data, call appropriate func 
 
-  // FIX both visible on default 
   if(a_visible) matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
-  if(matrix_a == undefined && matrix_b == undefined) {
-    warning_msg("BOTH MATRICES ARE EMPTY!"); 
-    return; 
-  }
+  // if(matrix_a == undefined && matrix_b == undefined) 
 
+  let err = missing_element(matrix_a, matrix_b); 
+  if(err) return; 
 
-  console.log(matrix_a); 
-  console.log(matrix_b); 
 
 
   switch(operator.value){
     case "*":
-      mul_matrix(matrix_a,matrix_b);
+      err = mul_matrix(matrix_a,matrix_b);
       break; 
     case "+":
       // add_matrix(a,b);
@@ -203,27 +198,35 @@ compute_btn.addEventListener("click", () => {
     // no defulat required, "*" first selected option 
   }
 
+  if(err) return; 
+
 });
 
 
 // -------------------------- Matrix A + B ---------------------------
 function add_matrix(matrix_a, matrix_b){
-// SAME SIZE 
+  // same size 
+
+
 }
 
 // -------------------------- Matrix A - B ---------------------------
 function subtract_matrix(matrix_a, matrix_b){
-// SAME SIZE 
+  // same size  
 
 }
 
 // -------------------------- Matrix A * B ---------------------------
 function mul_matrix(matrix_a, matrix_b){
   // # cols first == # row second 
+  // simply use formula: 
 
-  // am_input, an_input ... 
+  if(an_input != bn_input) {
+    warning_msg("#cols matrix A <em>MUST EQUAL</em> #rows matrix B"); 
+    return true; 
+  }
 
-  if(an_input != bn_input) {}
+  
 
 
 
@@ -257,6 +260,25 @@ det_a_button.addEventListener("click", () => {
 // -------------------------- Arrow Keys Nav Matrix B ---------------------------
 
 
+
+// -------------------------- Small Err Check ---------------------------
+function missing_element(matrix_a, matrix_b){
+  // non-specific, if at least one element is missing, modal waring will sho wup 
+
+  let msg = ""; 
+
+  if(matrix_a.includes(NaN)) msg += " A "; 
+
+  if(matrix_b.includes(NaN)) msg += " B "; 
+
+  if(msg.length > 1) {
+    warning_msg(`Missing one or more elements in matrix: ${msg}`); 
+    return true; 
+  }
+
+  return false; 
+}
+
 // -------------------------- Print Err ---------------------------
 
 // FORMAT BETTER FIX FIX FIX 
@@ -284,7 +306,17 @@ close_btn.addEventListener("click", () => {
 
   const overlay = document.querySelector("#overlay-background"); 
   overlay.classList.toggle("active"); 
-
 }); 
 
 // MOVE to function, dont repeat 
+
+
+
+// let root = document.documentElement; 
+// root = document.querySelector("template-grid"); 
+
+// function set_attr(element, attr){
+//   for(var key in attr) {
+//     element.setAttribute(key, attr[key]);
+//   }
+// }
