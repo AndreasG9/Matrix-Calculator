@@ -14,15 +14,6 @@
     <h2>Matrix Calculator</h2>
   </header>
 
-<!--   
-  <nav class="nav">
-    <ul>
-      <li><a href="#" class="current-layout">Matrix Calculator</a></li>
-      <li><a href="matrix_det_layout.html" >Det</a></li>
-      <li><a href="#" >Eigen value/s and vector/s Calculator</a></li>
-    </ul>
-  </nav> -->
-
   <div class="main-container">
 
     <div class="size-container">
@@ -65,7 +56,7 @@
         </div>
 
       <div class="operator">
-        <button>SWAP</button>
+        <button id="swap-btn" class="pointer">SWAP</button>
         <select name="" id="matrix-operator" class="bold pointer">
           <option value="*" class="bold">*</option>
           <option value="+" class="bold">+</option>
@@ -132,9 +123,28 @@
     <!-- <button type="submit" id="compute-btn" class="pointer">COMPUTE</button> -->
 
 
-  <div class="solution-container"></div>
+  <div class="solution-container">
+    <div class="result-wrapper">
+      <!-- 4 divs: will ocupy two matrices, binary operator and result 
+      || will ocupy unary op, one matrix, and result-->
+      <div class="one"></div>
+      <div class="two"></div>
+      <div class="three"></div>
+      <div class="four"></div>
+  </div>
+    <!--  
+      <div id="inputed-matrix-a"></div>
+      TABLE A HERE
+      <div id="inputed-operator"></div>
+      <div id="inputed-matrix-b"></div>
+      TABLE B HERE
+    -->  
+
+    <div class="res"></div>
+  </div>
 
 </div>
+
 
   <div class="warning-box" >
     <div id="warning-msg" >

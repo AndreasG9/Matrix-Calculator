@@ -168,19 +168,18 @@ function make_matrix(matrix_grid, m, n){
 document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
   // hide the solution box (if present), reset matrix inputs 
 
-  hide_solution_box(); 
+  // const matrix_a = document.querySelector(".matrix-grid-a");
+  // matrix_a.reset(); 
 
-  const matrix_a = document.querySelector(".matrix-grid-a");
-  matrix_a.reset(); 
+  document.querySelector(".matrix-grid-a").reset(); 
+  document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 document.querySelector("#matrix-b-clear-btn").addEventListener("click", () => {
     // hide the solution box (if present), reset matrix inputs 
 
-  hide_solution_box(); 
-
-  const matrix_b = document.querySelector(".matrix-grid-b");
-  matrix_b.reset(); 
+  document.querySelector(".matrix-grid-b").reset(); 
+  document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
@@ -289,7 +288,9 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
     }
   }
 
-  display_result_binary(product, matrix_a_2d, matrix_b_2d); 
+  console.log(product); 
+
+  display_result_binary(product, matrix_a_2d, matrix_b_2d, am, an, bm, bn, "*"); 
 
   return 0; // success 
 }
@@ -337,13 +338,30 @@ document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
 
 
 // -------------------------- Display result from binary op ---------------------------
-function display_result_binary(result, matrix_a, matrix_b){
-  // display both matrices with result 
+function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, operator){
+  // display both matrices with result (insert matrix as table)
 
-  // const solution_box = document.querySelector(".solution-container"); 
-  // solution_box.setProperty.visibility = "visible"; 
+  const solution_box = document.querySelector(".solution-container"); 
+  solution_box.style.transform ="scale(1)"; 
 
+  // 4 divs, 1: matrix a, 2: operator, 3: matrix b, 4: result 
+  const wrapper = document.querySelector(".result-wrapper"); 
+  const divs = document.querySelectorAll(".result-wrapper > div"); // return object containing those 4 divs 
+  
 
+  reset_result(); // clear old result, if present 
+  
+  // display matrix a
+  make_table(divs[0], matrix_a, am, an); 
+
+  // display operator
+  divs[1].innerHTML = operator; 
+
+  // display matrix b 
+  make_table(divs[2], matrix_b, bm, bn); 
+
+  // display result 
+  make_table(divs[3], result, am, bn); 
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -353,16 +371,42 @@ function display_result_unary(matrix){
   // const solution_box = document.querySelector(".solution-container"); 
   // solution_box.setProperty.visibility = "visible"; 
   
+  // 4 divs, 1: operator, 2: matrix: a, 3: result, 4: empty 
+
+
+}
+
+function make_table(target, matrix, m, n){
+  // target is location to put the matrix
+  // table will match the result matrix, add each element in appropriate index 
+
+  let table = document.createElement("table"); 
+  target.appendChild(table); 
+
+  for(let i=0; i<m; ++i){
+    let table_row = document.createElement("tr"); 
+    table.appendChild(table_row); 
+
+    for(let j=0; j<n; ++j){
+      let table_data = document.createElement("td");
+
+      table_data.innerHTML = matrix[i][j]; 
+      table_row.appendChild(table_data); 
+    }
+  }
+}
+
+
+function reset_result(divs){
+  // clear previous unary or binary operation with single/ both matrices 
   
-
+  // divs.innerHTML = ""; 
 
 }
 
-function hide_solution_box(){
-  // simply hide solution box 
-  const solution_box = document.querySelector(".solution-container");
-  solution_box.style.visibility = "hidden";
-}
+
+
+
 
 // -------------------------- Arrow Keys nav size input ---------------------------
 // -------------------------- Arrow Keys Nav Matrix A ---------------------------

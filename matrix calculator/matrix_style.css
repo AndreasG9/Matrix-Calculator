@@ -138,17 +138,6 @@ span.right-bracket{
   transform: translateY(1px);
 }
 
-.res {
-  visibility: hidden;
-  width: 10%; 
-  height: 50px; 
-  background: linear-gradient(to right, #87CEFA, #00FA9A,	#F0FFFF);
-  font-size: 1.4rem;
-  border: 2px solid #000;
-  text-align: center;
-  grid-row: 2/3;
-  justify-self: left;
-}
 
 .solution-box{
   grid-row: 4/5;
@@ -166,53 +155,29 @@ span.right-bracket{
 }
 
 
-.small-left-bracket{
-  font-size: 1.6rem;
-  
-  transform: scaleY(2);
 
-  /* position: relative;
-  top: 40px; */
-
-  position: relative;
-  top: 40%;
-
-  /* transform: scale(1, 2); */
-  
-}
-
-.small-right-bracket{
-  font-size: 1.8rem;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* MATRIX CALCULATOR CSS*/ 
 
 .main-container{
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+}
 
-  border: 2px solid #000000;
+.pointer{
+  cursor: pointer;
+  margin: 2px; 
+}
 
+.bold {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: center;
 }
 
 .main-container .size-container{
   margin-top: 40px;
   margin-right: 80px;
-  border: 2px solid #000000;
+  /* border: 2px solid #000000; */
 }
 
 .main-container .m-size, 
@@ -245,21 +210,30 @@ span.right-bracket{
 
 
 .main-container .matrices-container .operator{
-  margin: 5px;
+  margin-bottom: 100px;
   align-self: center;
 }
 
+.main-container .matrices-container #swap-btn{
+  margin-bottom: 10px;
+}
+
+.main-container .matrices-container #matrix-operator{
+  margin-left: 8px;
+}
+
+
 .main-container .matrices-container #compute-btn{
+  /* TODO: FIX POTNETIAL OVERLAP */
   width: 80px;
   height: 40px;
   margin-top: 60%; 
+  
+  border: 2px solid blue;
+  
 }
 
 .main-container .matrices-container .matrix-buttons{
-  /* display: flex;
-  flex-direction: row;
-  margin-top: 5px; */
-
   border: 2px solid #333; 
 
   display: grid;
@@ -290,28 +264,16 @@ span.right-bracket{
   grid-template-columns: repeat(var(--b-n), 50px);
 }
 
-.pointer{
-  cursor: pointer;
-  margin: 2px; 
-}
 
-.bold {
-  font-weight: bold;
-  font-size: 1.1em;
-  text-align: center;
-}
+
 
 
 .main-container .button{
-  /* width: 60px;
-  height: 40px; */
   text-align: center;
 }
 
 .main-container #matrix-a-raised-btn,
 .main-container #matrix-b-raised-btn{
-  /* width: 120px; 
-  height: 60px; */
   text-align: left;
   grid-column: span 2;
 }
@@ -321,6 +283,31 @@ span.right-bracket{
   width: 80px; 
   height: 20px;
 }
+
+.main-container .solution-container{
+  border: 5px solid rgb(121,154,185); 
+  margin-top: 40px;
+  min-width: 500px;
+  min-height: 100px;
+  
+  transform: scale(0);
+}
+
+
+.main-container .solution-container .result-wrapper{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1px;  
+  grid-auto-rows: minmax(100px, auto);
+
+}
+
+.main-container .solution-container .result-wrapper  > div{
+  border: 2px solid black; 
+  max-height: fit-content;
+  max-width: fit-content;
+}
+
 
 
 .warning-box{
