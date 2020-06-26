@@ -1,23 +1,24 @@
-// not the best organization, no framework, or libraries 
+// Andreas Gagas - Matrix-Calculator 
+ 
 
-// save matrix input 
+// quickly change default size (default matrix SQAURED)
+const DEFAULT_M = 2; 
+const DEFAULT_N = 2; 
 
 
-/* 
- matrix a: m x n 
- matrix b: m x n 
-*/ 
 let matrix_a = []; 
 let matrix_b = []; 
 let am_input, an_input, bm_input, bn_input = 0; 
-let a_visible, b, visible = false; 
+let a_visible, b_visible = false; 
 
-const DEFAULT_M = 2; 
-const DEFAULT_N = 2; 
 
 // MODULARIZE / format better TODO 
 function init_default(){
   // default display two 2x2 matrices 
+  // add templates to class list 
+
+
+  
 }
 
 
@@ -31,7 +32,7 @@ init_default();
 let matrix_grid_a = document.querySelector(".matrix-grid-a");
 let matrix_grid_b = document.querySelector(".matrix-grid-b");
 
-for(i=0; i<4; ++i){
+for(i=0; i<(DEFAULT_M * DEFAULT_N); ++i){
   // create square matrix, adjust css var to create correct template rows/ cols
   let input = document.createElement("input"); 
   let input2 = document.createElement("input"); 
@@ -70,6 +71,7 @@ document.querySelector("#create-btn").addEventListener("click", () => {
   // else if((bm_input && !bn_input) || (bn_input && !bm_input)) warning_msg("missing <i><u>matrix B</u></i> dimension");
   // else if(!(am_input && bm_input && an_input && bn_input)) warning_msg("default: matrix A: 2x2 <br> matrix B: 2x2"); 
 
+
   let msg = "";
 
   if((am_input && !an_input) || (an_input && !am_input)) msg += "<i><u>matrix A</u></i>";
@@ -82,26 +84,38 @@ document.querySelector("#create-btn").addEventListener("click", () => {
     return; 
   }
 
-  else{
-    // display new matrix, or keep default 
+  if((isNaN(am_input) && isNaN(an_input) && isNaN(bm_input) && isNaN(bn_input))){
+    // all inputs EMPTY, keep default 
+    warning_msg("default: matrix A: 2x2 <br> matrix B: 2x2"); 
+    event.preventDefault();
+    return; 
+  }  
 
-    if((isNaN(am_input) && isNaN(an_input) && isNaN(bm_input) && isNaN(bn_input))){
-      // all inputs empty, keep default 
-      warning_msg("default: matrix A: 2x2 <br> matrix B: 2x2"); 
-      event.preventDefault();
-      return; 
-    }  
+  msg = ""; 
 
-    // create only a single new matrix, the other default 
-    if((isNaN(am_input) && isNaN(an_input))) am_input = 2, an_input = 2; 
-    else if((isNaN(bm_input) && isNaN(bn_input))) bm_input = 2, bn_input = 2; 
+  if((am_input * an_input) > 100) msg += "<i><u>matrix A</u></i>";
+  if((bm_input * bn_input) > 100) msg += "<i><u>matrix B</u></i>";
 
-    display_matrix(am_input, an_input, bm_input, bn_input); 
-    console.log(`MATRIX A: ${am_input} x ${an_input}\n MATRIX B: ${bm_input} x ${bn_input}`); 
+  if(msg.length > 1) {
+    // limit, no matrix larger than 100 elements / inputs 
+    warning_msg("LIMIT (100 elements) reached in matrix: " + msg); 
+    event.preventDefault();
+    return; 
   }
 
-}); 
 
+  // SUCCESS 
+
+  // create only a single new matrix, the other default 
+  if((isNaN(am_input) && isNaN(an_input))) am_input = 2, an_input = 2; 
+  if((isNaN(bm_input) && isNaN(bn_input))) bm_input = 2, bn_input = 2; 
+
+  // create two new matrices to display 
+  display_matrix(am_input, an_input, bm_input, bn_input); 
+
+
+  // console.log(`MATRIX A: ${am_input} x ${an_input}\n MATRIX B: ${bm_input} x ${bn_input}`); 
+}); 
 
 // -------------------------- Display correct matrix ---------------------------
 function display_matrix(am_input, an_input, bm_input, bn_input){
@@ -135,7 +149,7 @@ function display_matrix(am_input, an_input, bm_input, bn_input){
 }
 
 function make_matrix(matrix_grid, m, n){
-  // didnt want to repeat code for matrix a m,n matrix b m, n 
+  // remove old matrix, add (m*n) inputs whose will be formatted later 
 
   while(matrix_grid.hasChildNodes()){
     // remove old matrix, if present 
@@ -151,9 +165,6 @@ function make_matrix(matrix_grid, m, n){
 }
 
 // -------------------------- Clear Matrix (A or B) ---------------------------
-// const a_clear_button = document.querySelector("#matrix-a-clear-btn");  
-// const b_clear_button = document.querySelector("#matrix-b-clear-btn");  
-
 document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
   // hide the solution box (if present), reset matrix inputs 
 
@@ -171,12 +182,6 @@ document.querySelector("#matrix-b-clear-btn").addEventListener("click", () => {
   const matrix_b = document.querySelector(".matrix-grid-b");
   matrix_b.reset(); 
 });
-
-function hide_solution_box(){
-  // simply hide solution box 
-  const solution_box = document.querySelector(".solution-container");
-  solution_box.style.visibility = "hidden";
-}
 
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
 function read_input(matrix_grid, m, n){
@@ -201,25 +206,22 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
 
   const err = missing_element(matrix_a, matrix_b); 
   if(err) return; 
-
-
-  // ... 
-
 }); 
 
 
 
 // -------------------------- Compute ---------------------------
 document.querySelector("#compute-btn").addEventListener("click", () => {
-  // read data, call appropriate func 
+  // binary operation, read data, call appropriate func 
 
   if(a_visible) matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
-  let err = missing_element(matrix_a, matrix_b); 
+  let err = missing_element(matrix_a, matrix_b); // one or more inputs are missing 
   if(err) return; 
 
   const operator = document.querySelector("#matrix-operator");  
+  console.log(`OPERATOR: ${operator.value}`); 
 
   // convert 1d to 2d array 
   let matrix_a_2d = make_2d(matrix_a, am_input, an_input);
@@ -268,37 +270,28 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
 
   if(an != bm) {
     warning_msg("#cols matrix A <em>MUST EQUAL</em> #rows matrix B"); 
-    return true; 
+    return 1; 
   }
 
-  let product = []; 
-
-  // init 2d array, size will be am x bn 
-  for(let i=0; i<am; ++i){
-    for(let j=0; j<bn; ++j){
-      product[i] = []; 
-    }
-  }
+  // "init" 2d array to store product, size will be am x bn 
+  let product = new Array(am).fill(0).map(() => new Array(bn).fill(0)); 
 
   for(let i=0; i<am; ++i){
     // 1-n row matrix a 
     for(let j=0; j<bn; ++j){
       // 1-n col matrix b 
-      
       for(let k=0; k<an; ++k){
         // result, each element in matrix a row * each element in matrix b col 
         // add result, increment k when row/ col is used 
-       // product[i][j] += matrix_a_2d[i][k] * matrix_b_2d[k][j]; 
-       console.log(product[i][j]); 
+        product[i][j] += matrix_a_2d[i][k] * matrix_b_2d[k][j]; 
       }
+      // console.log(product[i][j]); // NEW ELEMENT ADDED IN RESULT MATRIX 
     }
   }
 
-  
-  
+  display_result_binary(product, matrix_a_2d, matrix_b_2d); 
 
-
-  return false; 
+  return 0; // success 
 }
 
 // -------------------------- 1D to 2D array ---------------------------
@@ -337,13 +330,39 @@ document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
 
 // -------------------------- Transpose Matrix (A or B) ---------------------------
 
+
 // -------------------------- Matrix raised power ---------------------------
-// MAEK SURE NOT NEG 
+// no neg pow , set a limit 
 
 
-// -------------------------- Display result ---------------------------
+
+// -------------------------- Display result from binary op ---------------------------
+function display_result_binary(result, matrix_a, matrix_b){
+  // display both matrices with result 
+
+  // const solution_box = document.querySelector(".solution-container"); 
+  // solution_box.setProperty.visibility = "visible"; 
 
 
+}
+
+// -------------------------- Display result from unary op ---------------------------
+function display_result_unary(matrix){
+  // display single matrix with result 
+
+  // const solution_box = document.querySelector(".solution-container"); 
+  // solution_box.setProperty.visibility = "visible"; 
+  
+  
+
+
+}
+
+function hide_solution_box(){
+  // simply hide solution box 
+  const solution_box = document.querySelector(".solution-container");
+  solution_box.style.visibility = "hidden";
+}
 
 // -------------------------- Arrow Keys nav size input ---------------------------
 // -------------------------- Arrow Keys Nav Matrix A ---------------------------
@@ -362,10 +381,10 @@ function missing_element(matrix_a, matrix_b){
   if(msg.length > 1) {
     // present warning 
     warning_msg(`Missing one or more elements in matrix: ${msg}`); 
-    return true; 
+    return 1; 
   }
 
-  return false; 
+  return 0; // success
 }
 
 // -------------------------- Print Err ---------------------------
