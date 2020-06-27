@@ -1,11 +1,11 @@
 // Andreas Gagas - Matrix-Calculator 
- 
+
+
 
 // quickly change default size (default matrix SQUARED)
 const DEFAULT_M = 2; 
 const DEFAULT_N = 2; 
-
-const SQUARE_MAX = 36; // no larger 6x6 det calculation? 
+const SQUARE_MAX = 36; // no larger 6x6 det, inverse calculations 
 
 let matrix_a = []; 
 let matrix_b = []; 
@@ -24,6 +24,14 @@ init_default();
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 // let buttons = document.querySelector("btns"); 
+
+
+// testing
+matrix_a = [[2,2], [2,2]];
+matrix_b = [[2,2], [2,2]];
+mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
+
+
 
 
 // ------------------------- DEFAULT DISPLAY TWO 2X2 MATRICES-----------------------------
@@ -233,16 +241,16 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
       err = add_matrix(matrix_a_2d, matrix_b_2d, am_input, an_input, bm_input, bn_input);
       break; 
     case "-":
-      // sub_matrix(a,b);
+      err = subtract_matrix(matrix_a_2d, matrix_b_2d, am_input, an_input, bm_input, bn_input);
       break; 
-
-    // no defulat required, "*" first selected option 
+    default:
+      break; 
   }
 
   if(err) return; 
 
-  // display result 
-
+  // // display result 
+  // display_result_binary(result, matrix_a_2d, matrix_b_2d, am, an, bm, bn, operator.value); 
 });
 
 // // -------------------------- Compute Unary Operation ---------------------------
@@ -276,7 +284,7 @@ function make_2d(matrix, m, n){
 }
 
 // -------------------------- Matrix A + B ---------------------------
-function add_matrix(matrix_a, matrix_b, am, an, bm, bn){
+function add_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
   // both matrices must be same size 
 
   if(same_size(am, an, bm, bn)) return 1; // err 
@@ -286,19 +294,27 @@ function add_matrix(matrix_a, matrix_b, am, an, bm, bn){
 
   for(let i=0; i<am; ++i){
     for(let j=0; j<bn; ++j){
-
+      // row w/ bn # elements  
+      // match index in matrix_a w/ matrix_b and add result to matching index in result matrix 
+      sum[i][j] = matrix_a_2d[i][j] + matrix_b_2d[i][j]; 
     }
   }
 
-  
+  display_result_binary(sum, matrix_a_2d, matrix_b_2d, am, an, bm, bn, "+"); 
 
   return 0; // success 
 }
 
 // -------------------------- Matrix A - B ---------------------------
 function subtract_matrix(matrix_a, matrix_b){
-  // same size  
+  // both matrices must be same size 
 
+  if(same_size(am, an, bm, bn)) return 1; // err 
+
+  // init 2d arr 
+  let diff = new Array(am).fill(0).map(() => new Array(bn).fill(0)); 
+
+  
   
   return 0; // success 
 }
@@ -330,8 +346,6 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
       // console.log(product[i][j]); // NEW ELEMENT ADDED IN RESULT MATRIX 
     }
   }
-
-  console.log(product); 
 
   display_result_binary(product, matrix_a_2d, matrix_b_2d, am, an, bm, bn, "*"); 
 
@@ -365,7 +379,9 @@ function calc_inverse(matrix_grid, m, n){
   }
 
   let matrix = read_input(matrix_grid, m, n); 
-  if(missing_element(matrix)) return; // err, missing element 
+  if(missing_element(matrix)) return; // err, missing element   FIX 
+
+
 
   // TODO det != 0 
 
@@ -375,14 +391,33 @@ function calc_inverse(matrix_grid, m, n){
 
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
-document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
-  // needs to be sqaure 
-  
+document.querySelector("#matrix-a-det-btn").addEventListener("click", () => { 
+  calc_det(matrix_grid_a, am_input, an_input); 
 });
+
+function calc_det(matrix_grid, m, n){
+  // needs to be square 
+  if(m != n){
+    warning_msg("Not a SQUARE matrix");
+    return; 
+  }
+
+  if((m*n) > SQUARE_MAX){
+    warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
+    return; 
+  }
+
+  // cofactor method ... 
+}
 
 
 
 // -------------------------- Transpose Matrix (A or B) ---------------------------
+document.querySelector("#matrix-a-transpose-btn").addEventListener("click", () => {
+  // swap rows with cols 
+});
+
+
 
 
 // -------------------------- Matrix raised power ---------------------------
@@ -396,15 +431,16 @@ document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
 function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, operator){
   // display both matrices with result (insert matrix as table)
 
+  console.log(result); 
+
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
 
-  // 4 divs, 1: matrix a, 2: operator, 3: matrix b, 4: result 
+  // 4 divs, 1: matrix a, 2: operator, 3: matrix b, 4: = 5: result
   const wrapper = document.querySelector(".result-wrapper"); 
   const divs = document.querySelectorAll(".result-wrapper > div"); // return object containing those 4 divs 
   
-  // TODO: RESET OLD RESULT 
-  reset_result(); // clear old result, if present 
+  reset_result(divs); // clear old result, if present 
   
   // display matrix a
   make_table(divs[0], matrix_a, am, an); 
@@ -415,8 +451,11 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   // display matrix b 
   make_table(divs[2], matrix_b, bm, bn); 
 
+  // display =
+  divs[3].innerHTML = "="; 
+
   // display result 
-  make_table(divs[3], result, am, bn); 
+  make_table(divs[4], result, am, bn); 
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -426,7 +465,7 @@ function display_result_unary(matrix){
   // const solution_box = document.querySelector(".solution-container"); 
   // solution_box.setProperty.visibility = "visible"; 
   
-  // 4 divs, 1: operator, 2: matrix: a, 3: result, 4: empty 
+  // 4 divs, 1: operator, 2: matrix: a, 3: equals, 4: result 
 
 
 }
@@ -456,7 +495,9 @@ function make_table(target, matrix, m, n){
 function reset_result(divs){
   // clear previous unary or binary operation with single/ both matrices 
   
-  // divs.innerHTML = ""; 
+  for(let i=0; i<divs.length; ++i){
+    divs[i].innerHTML = "";  
+  }
 
 }
 
