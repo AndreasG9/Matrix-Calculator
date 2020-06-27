@@ -1,10 +1,11 @@
 // Andreas Gagas - Matrix-Calculator 
  
 
-// quickly change default size (default matrix SQAURED)
+// quickly change default size (default matrix SQUARED)
 const DEFAULT_M = 2; 
 const DEFAULT_N = 2; 
 
+const SQUARE_MAX = 36; // no larger 6x6 det calculation? 
 
 let matrix_a = []; 
 let matrix_b = []; 
@@ -15,10 +16,7 @@ let a_visible, b_visible = false;
 // MODULARIZE / format better TODO 
 function init_default(){
   // default display two 2x2 matrices 
-  // add templates to class list 
-
-
-  
+  // add templates to class list
 }
 
 
@@ -106,13 +104,12 @@ document.querySelector("#create-btn").addEventListener("click", () => {
 
   // SUCCESS 
 
-  // create only a single new matrix, the other default 
+  // create only a single NEW matrix, the other default 
   if((isNaN(am_input) && isNaN(an_input))) am_input = 2, an_input = 2; 
   if((isNaN(bm_input) && isNaN(bn_input))) bm_input = 2, bn_input = 2; 
 
-  // create two new matrices to display 
+  // create two matrices to display 
   display_matrix(am_input, an_input, bm_input, bn_input); 
-
 
   // console.log(`MATRIX A: ${am_input} x ${an_input}\n MATRIX B: ${bm_input} x ${bn_input}`); 
 }); 
@@ -168,9 +165,6 @@ function make_matrix(matrix_grid, m, n){
 document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
   // hide the solution box (if present), reset matrix inputs 
 
-  // const matrix_a = document.querySelector(".matrix-grid-a");
-  // matrix_a.reset(); 
-
   document.querySelector(".matrix-grid-a").reset(); 
   document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
@@ -204,12 +198,14 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
   if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
   const err = missing_element(matrix_a, matrix_b); 
-  if(err) return; 
+  if(err) return;
+  
+  // TODO 
 }); 
 
 
 
-// -------------------------- Compute ---------------------------
+// -------------------------- Compute Binary Operation ---------------------------
 document.querySelector("#compute-btn").addEventListener("click", () => {
   // binary operation, read data, call appropriate func 
 
@@ -234,7 +230,7 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
       err = mul_matrix(matrix_a_2d,matrix_b_2d, am_input, an_input, bm_input, bn_input);
       break; 
     case "+":
-      // add_matrix(a,b);
+      err = add_matrix(matrix_a_2d, matrix_b_2d, am_input, an_input, bm_input, bn_input);
       break; 
     case "-":
       // sub_matrix(a,b);
@@ -249,19 +245,66 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
 
 });
 
+// // -------------------------- Compute Unary Operation ---------------------------
+// function compute_unary(operation, matrix){
+//   // works/ structured similar to compute binary op, which required two matrices 
+
+
+  
+
+// }
+
+// -------------------------- 1D to 2D array ---------------------------
+function make_2d(matrix, m, n){
+  let temp = [...matrix]; 
+  let two_d = []; 
+
+  if(m == n){
+    // square matrix 
+    while(temp.length) two_d.push(temp.splice(0, m)); 
+  }
+
+  else{
+    for(let i=0; i<temp.length; i += n){
+      // increment by size of column
+      // ex. 3x2 [[0,2],[2,4],[4,6]] ... 
+      two_d.push(temp.slice(i, n + i)); 
+    }
+  }
+
+  return two_d; 
+}
 
 // -------------------------- Matrix A + B ---------------------------
-function add_matrix(matrix_a, matrix_b){
-  // same size 
+function add_matrix(matrix_a, matrix_b, am, an, bm, bn){
+  // both matrices must be same size 
 
+  if(same_size(am, an, bm, bn)) return 1; // err 
 
+  // "init" 2d arr 
+  let sum = new Array(am).fill(0).map(() => new Array(bn).fill(0)); 
+
+  for(let i=0; i<am; ++i){
+    for(let j=0; j<bn; ++j){
+
+    }
+  }
+
+  
+
+  return 0; // success 
 }
 
 // -------------------------- Matrix A - B ---------------------------
 function subtract_matrix(matrix_a, matrix_b){
   // same size  
 
+  
+  return 0; // success 
 }
+
+
+
 
 // -------------------------- Matrix A * B ---------------------------
 function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
@@ -295,45 +338,57 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
   return 0; // success 
 }
 
-// -------------------------- 1D to 2D array ---------------------------
-function make_2d(matrix, m, n){
-  let temp = [...matrix]; 
-  let two_d = []; 
-
-  if(m == n){
-    // square matrix 
-    while(temp.length) two_d.push(temp.splice(0, m)); 
-  }
-
-  else{
-    for(let i=0; i<temp.length; i += n){
-      // increment by size of column
-      // ex. 3x2 [[0,2],[2,4],[4,6]] ... 
-      two_d.push(temp.slice(i, n + i)); 
-    }
-  }
-
-  return two_d; 
-}
 
 // -------------------------- Calculate Inverse of Matrix (A or B) ---------------------------
-// needs to be square 
-const inverse_butn = document.querySelector("#matrix-a-inverse-btn");
+
+document.querySelector("#matrix-a-inverse-btn").addEventListener("click", () => {
+  //calc_inverse(); 
+  //compute_unary("inverse", "a"); 
+
+  calc_inverse(matrix_grid_a, am_input, an_input);
+}); 
+document.querySelector("#matrix-b-inverse-btn").addEventListener("click", () => {
+  //calc_inverse(); 
+});
+
+function calc_inverse(matrix_grid, m, n){
+  // needs to be square matrix and det != 0 
+
+  if(m != n){
+    warning_msg("Not a SQUARE matrix");
+    return; 
+  }
+
+  if((m*n) > SQUARE_MAX){
+    warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
+    return; 
+  }
+
+  let matrix = read_input(matrix_grid, m, n); 
+  if(missing_element(matrix)) return; // err, missing element 
+
+  // TODO det != 0 
+
+  
+  
+}
+
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
   // needs to be sqaure 
-
-
-
   
 });
+
+
 
 // -------------------------- Transpose Matrix (A or B) ---------------------------
 
 
 // -------------------------- Matrix raised power ---------------------------
 // no neg pow , set a limit 
+
+
 
 
 
@@ -348,7 +403,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   const wrapper = document.querySelector(".result-wrapper"); 
   const divs = document.querySelectorAll(".result-wrapper > div"); // return object containing those 4 divs 
   
-
+  // TODO: RESET OLD RESULT 
   reset_result(); // clear old result, if present 
   
   // display matrix a
@@ -376,6 +431,8 @@ function display_result_unary(matrix){
 
 }
 
+
+
 function make_table(target, matrix, m, n){
   // target is location to put the matrix
   // table will match the result matrix, add each element in appropriate index 
@@ -396,7 +453,6 @@ function make_table(target, matrix, m, n){
   }
 }
 
-
 function reset_result(divs){
   // clear previous unary or binary operation with single/ both matrices 
   
@@ -404,20 +460,29 @@ function reset_result(divs){
 
 }
 
+// -------------------------- Small Err Check ---------------------------
+function same_size(am, an, bm, bn){
+  // check, if both matrices must be equal 
 
+  if((am != bm) || (an != bn)){
+    warning_msg("Both matrices must be equal"); 
+    return 1;
+  } 
 
+  return 0; // same size 
+}
 
-
-// -------------------------- Arrow Keys nav size input ---------------------------
-// -------------------------- Arrow Keys Nav Matrix A ---------------------------
-// -------------------------- Arrow Keys Nav Matrix B ---------------------------
+// // -------------------------- Small Err Check ---------------------------
+// function both_square(am, an, bm, bn){
+//   if((am != bm)  && (an != bn)) return 1; // not square matrices 
+//   else return 0; 
+// }
 
 // -------------------------- Small Err Check ---------------------------
 function missing_element(matrix_a, matrix_b){
   // non-specific, if at least one element is missing, modal waring will sho wup 
 
   let msg = ""; 
-  // || matrix_a.length == 0)
   if(matrix_a.includes(NaN) || matrix_a.length == 0) msg += " A "; 
 
   if(matrix_b.includes(NaN) || matrix_b.length == 0) msg += " B "; 
@@ -475,3 +540,7 @@ document.querySelector("#close-btn").addEventListener("click", () => {
 //       input.preventDefault();
 // }
 
+
+// -------------------------- Arrow Keys nav size input ---------------------------
+// -------------------------- Arrow Keys Nav Matrix A ---------------------------
+// -------------------------- Arrow Keys Nav Matrix B ---------------------------
