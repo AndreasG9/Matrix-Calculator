@@ -6,6 +6,7 @@
 const DEFAULT_M = 2; 
 const DEFAULT_N = 2; 
 const SQUARE_MAX = 36; // no larger 6x6 det, inverse calculations 
+const POWER_MAX = 99; 
 
 let matrix_a = []; 
 let matrix_b = []; 
@@ -243,6 +244,7 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
     case "-":
       err = subtract_matrix(matrix_a_2d, matrix_b_2d, am_input, an_input, bm_input, bn_input);
       break; 
+
     default:
       break; 
   }
@@ -254,13 +256,43 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
 });
 
 // // -------------------------- Compute Unary Operation ---------------------------
-// function compute_unary(operation, matrix){
-//   // works/ structured similar to compute binary op, which required two matrices 
+function compute_unary(matrix_grid, m, n, operation){
+  // works/ structured similar to compute binary op, which required two matrices 
+  // matrix_grid is either from matrix a or b 
+  // possible err checked, dependent on operation  
+  // power is optional 
+  
+  let matrix = read_input(matrix_grid, m, n); 
+  if(missing_element_single_matrix(matrix)) return; // err, missing element
 
+  let matrix_2d = make_2d(matrix, m, n); 
 
+  let result = []; 
+
+  switch(operation){
+
+    case "inverse":
+      result = calc_inverse();
+      break; 
+    
+    case "pow":
+      result = calc_matrix_power(matrix_2d, m, n, power);
+      break; 
+      
+    case "det":
+      result = calc_det();
+      break; 
+
+    case "transpose":
+      result = transpose(matrix_2d, m, n); 
+      break; 
+
+    default:
+      break; 
+  }
   
 
-// }
+}
 
 // -------------------------- 1D to 2D array ---------------------------
 function make_2d(matrix, m, n){
@@ -307,7 +339,7 @@ function add_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
 
 // -------------------------- Matrix A - B ---------------------------
 function subtract_matrix(matrix_a, matrix_b){
-  // both matrices must be same size 
+  // both matrices must be same size, similar calculation to adding two matrices  
 
   if(same_size(am, an, bm, bn)) return 1; // err 
 
@@ -318,9 +350,6 @@ function subtract_matrix(matrix_a, matrix_b){
   
   return 0; // success 
 }
-
-
-
 
 // -------------------------- Matrix A * B ---------------------------
 function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
@@ -354,39 +383,62 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
 
 
 // -------------------------- Calculate Inverse of Matrix (A or B) ---------------------------
-
 document.querySelector("#matrix-a-inverse-btn").addEventListener("click", () => {
-  //calc_inverse(); 
-  //compute_unary("inverse", "a"); 
+  // make sure matrix is square and det != 0, call helper func. 
 
-  calc_inverse(matrix_grid_a, am_input, an_input);
+  if(is_square(am_input, an_input)) return; // err, not square 
+  if(max_square(am_input, an_input)) return; // exceed limit 
+  // TODO: det != 0 
+  compute_unary(matrix_grid_a, am_input, an_input, "inverse"); 
 }); 
 document.querySelector("#matrix-b-inverse-btn").addEventListener("click", () => {
-  //calc_inverse(); 
+  
 });
 
-function calc_inverse(matrix_grid, m, n){
-  // needs to be square matrix and det != 0 
-
-  if(m != n){
-    warning_msg("Not a SQUARE matrix");
-    return; 
-  }
-
-  if((m*n) > SQUARE_MAX){
-    warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
-    return; 
-  }
-
-  let matrix = read_input(matrix_grid, m, n); 
-  if(missing_element(matrix)) return; // err, missing element   FIX 
 
 
+function calc_inverse(matrix, m, n){
+  // already checked that the matrix is sqaure and the det is != 0 
 
   // TODO det != 0 
 
+  let inverse = new Array(m).fill(0).map(() => new Array(n).fill(0)); 
   
   
+
+  
+  return 0; 
+}
+
+// -------------------------- Matrix raised power ---------------------------
+// set a limit, det != 0, needs to be square
+document.querySelector("#matrix-a-raised-btn").addEventListener("click", () => {
+
+  let power = document.querySelector("#matrix-a-raised-power").value; 
+  if(power > POWER_MAX){
+    warning_msg(`Exceed POWER_MAX: ${POWER_MAX}`); 
+    return; 
+  }
+
+  if(is_square(am_input, an_input)) return; // err, not square 
+  compute_unary(matrix_grid_a, am_input, an_input, "pow", power);
+}); 
+document.querySelector("#matrix-b-raised-btn").addEventListener("click", () => {
+
+  if(is_square(bm_input, bn_input)) return; // err, not square 
+  compute_unary(matrix_grid_b, bm_input, bn_input, "pow");
+}); 
+
+
+function calc_matrix_power(matrix_grid, m, n, power){
+  // matrix mul by itself some amount of times 
+
+  let result = new Array(m).fill(0).map(() => new Array(n).fill(0)); 
+
+
+
+
+  return result; 
 }
 
 
@@ -395,7 +447,7 @@ document.querySelector("#matrix-a-det-btn").addEventListener("click", () => {
   calc_det(matrix_grid_a, am_input, an_input); 
 });
 
-function calc_det(matrix_grid, m, n){
+function calc_det(matrix, m, n){
   // needs to be square 
   if(m != n){
     warning_msg("Not a SQUARE matrix");
@@ -414,15 +466,29 @@ function calc_det(matrix_grid, m, n){
 
 // -------------------------- Transpose Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-transpose-btn").addEventListener("click", () => {
-  // swap rows with cols 
+  // swap rows with cols, not limited to a square matrix 
+  compute_unary(matrix_grid_a, am_input, an_input, "transpose"); 
 });
 
+document.querySelector("#matrix-b-transpose-btn").addEventListener("click", () => {
+  compute_unary(matrix_grid_b, bm_input, bn_input, "transpose"); 
+}); 
 
+function transpose(matrix_2d, m, n){
+  // swap rows with cols, not limited to a square matrix 
 
+  let transpose = new Array(n).fill(0).map(() => new Array(m).fill(0)); // 2x3 transpose will be 3x2 ... 
 
-// -------------------------- Matrix raised power ---------------------------
-// no neg pow , set a limit 
+  for(let i=0; i<n; ++i){
+    for(let j=0; j<m; ++j){
+      transpose[i][j] = matrix_2d[j][i];  
+    }
+  }
 
+  console.log(transpose); 
+
+  return transpose; 
+}
 
 
 
@@ -444,6 +510,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   
   // display matrix a
   make_table(divs[0], matrix_a, am, an); 
+  // brackets(divs[0]); 
 
   // display operator
   divs[1].innerHTML = operator; 
@@ -470,14 +537,32 @@ function display_result_unary(matrix){
 
 }
 
+function brackets(target){
+  // for result box 
 
+  // left bracket
+  // let left_bracket = document.createElement("span");
+  // left_bracket.innerHTML = "["; 
+
+
+  // target.parentNode.insertBefore(left_bracket, target); 
+
+
+}
 
 function make_table(target, matrix, m, n){
   // target is location to put the matrix
   // table will match the result matrix, add each element in appropriate index 
 
+
   let table = document.createElement("table"); 
   target.appendChild(table); 
+
+  // let left_bracket = document.createElement("span");
+  // left_bracket.innerHTML = "["; 
+  // table.parentNode.insertBefore(left_bracket, table); 
+
+  // table.classList.add("testing"); 
 
   for(let i=0; i<m; ++i){
     let table_row = document.createElement("tr"); 
@@ -490,15 +575,20 @@ function make_table(target, matrix, m, n){
       table_row.appendChild(table_data); 
     }
   }
+
+   
+}
+
+function brackets(target){
+
 }
 
 function reset_result(divs){
   // clear previous unary or binary operation with single/ both matrices 
-  
+
   for(let i=0; i<divs.length; ++i){
     divs[i].innerHTML = "";  
   }
-
 }
 
 // -------------------------- Small Err Check ---------------------------
@@ -513,11 +603,20 @@ function same_size(am, an, bm, bn){
   return 0; // same size 
 }
 
-// // -------------------------- Small Err Check ---------------------------
-// function both_square(am, an, bm, bn){
-//   if((am != bm)  && (an != bn)) return 1; // not square matrices 
-//   else return 0; 
-// }
+function is_square(m,n){
+  if(m != n) return 1; // err 
+
+  return 0; 
+} 
+
+function max_square(m,n){
+  if((m*n) > SQUARE_MAX){
+    warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
+     return 1; 
+  }
+
+  return 0; 
+}
 
 // -------------------------- Small Err Check ---------------------------
 function missing_element(matrix_a, matrix_b){
@@ -531,6 +630,16 @@ function missing_element(matrix_a, matrix_b){
   if(msg.length > 1) {
     // present warning 
     warning_msg(`Missing one or more elements in matrix: ${msg}`); 
+    return 1; 
+  }
+
+  return 0; // success
+}
+
+function missing_element_single_matrix(matrix){
+  
+  if(matrix.includes(NaN) || matrix.length == 0){
+    warning_msg("Missing one or more elements"); 
     return 1; 
   }
 
