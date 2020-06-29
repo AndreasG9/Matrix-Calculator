@@ -138,7 +138,7 @@ span.right-bracket{
 }
 
 
-.solution-box{
+/* .solution-box{
   grid-row: 4/5;
   grid-column: 1/4;
   min-height: 100px;
@@ -151,7 +151,7 @@ span.right-bracket{
   display: flex;
 
   visibility: hidden;
-}
+} */
 
 
 
@@ -194,15 +194,20 @@ span.right-bracket{
 
 .main-container .matrices-container{
   display: grid;
-  grid-template-columns: 2fr .4fr 2fr .4fr;
+  grid-template-columns: 2fr .5fr 2fr .5fr;
+  gap: 10px;
   border: 5px solid rgb(121,154,185); 
   margin-top: 10px;
 }
 
-
 .main-container .matrices-container .operator{
-  margin-bottom: 100px;
   align-self: center;
+
+  /* margin-bottom: 100px;
+  align-self: center; */
+  /* margin-left: auto; */
+
+  margin-bottom: 50px;
 }
 
 .main-container .matrices-container #swap-btn{
@@ -215,21 +220,16 @@ span.right-bracket{
 
 
 .main-container .matrices-container #compute-btn{
-  /* TODO: FIX POTNETIAL OVERLAP */
   width: 80px;
   height: 40px;
   margin-top: 60%; 
-  
-  border: 2px solid blue;
-  
 }
 
 .main-container .matrices-container .matrix-buttons{
-  border: 2px solid #333; 
-
   display: grid;
   grid-template-columns: repeat(2, 100px);
   margin: 5px;
+  border: 2px solid #333333; 
 }
 
 
@@ -237,12 +237,14 @@ span.right-bracket{
 .main-container .matrices-container .matrix-grid-b{
   /* border: 2px solid #333;  */
   width: max-content; 
+/* 
+  border: 2px solid #333333;  */
 }
 
 .template{
   display: grid; 
   gap: 2px; 
-  margin-left: 20%;
+  margin-left: 50px;
 }
 
 .template-grid-a{
@@ -280,29 +282,29 @@ span.right-bracket{
   margin-top: 40px;
   min-width: 200px;
   min-height: 100px;
-  
   transform: scale(0);
 }
 
 
 .main-container .solution-container .result-wrapper{
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  justify-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  /* grid-gap: 1px;   */
-  /* grid-auto-rows: minmax(100px, auto); */
-
 }
 
 .main-container .solution-container .result-wrapper  > div{
   /* border: 2px solid black;  */
   max-height: fit-content;
   /* max-width: fit-content; */
-
-
 }
 
+
+.main-container .matrices-container .matrix-label{
+  text-align: left;
+  margin-left: 10px;
+  font-weight: bold;
+}
 
 
 .warning-box{
