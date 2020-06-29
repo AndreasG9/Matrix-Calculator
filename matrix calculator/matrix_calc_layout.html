@@ -36,11 +36,6 @@
     </div>
 
     <div class="matrices-container">
-      <!-- <span class="matrix-label">
-        <span>A</span>
-        <span>B</span>
-      </span>  -->
-
       <div class="">
         <div class="matrix-label" id="matrix-a-label">A</div> 
         <form action="" class="matrix-grid-a">
@@ -48,15 +43,18 @@
         </form>
 
           <div class="matrix-buttons">
-
             <button id="matrix-a-det-btn" class="pointer button">det(A)</button>
             <button id="matrix-a-inverse-btn" class="pointer button">A<sup>-1</sup></button>
 
-            <button id="matrix-a-raised-btn" class="pointer ">A<sup><input type="number" id="matrix-a-raised-power" ></sup></button>
-            
+            <div class="exponential-box">
+              <form action="" class="exponential">
+                <button id="matrix-a-raised-btn" class="pointer ">A<sup>n</sup></button>
+                <input type="number" name="" id="matrix-a-raised-power">
+              </form>
+            </div>
+
             <button id="matrix-a-transpose-btn" class="pointer ">TRANSPOSE  <br>   A</button>
             <button type="submit" id="matrix-a-clear-btn" class="pointer ">CLEAR A</button>
-
           </div>
         </div>
 
@@ -80,11 +78,20 @@
           <button id="matrix-b-det-btn" class="pointer">det(B)</button>
           <button id="matrix-b-inverse-btn" class="pointer  ">B<sup>-1</sup></button>
 
-          <button id="matrix-b-raised-btn" class="pointer ">B<sup><input type="number" id="matrix-b-raised-power" ></sup></button>
-          
+
+
+          <div class="exponential-box">
+            <form action="" class="exponential">
+              <button id="matrix-b-raised-btn" class="pointer ">B<sup>n</sup></button>
+              <input type="number" name="" id="matrix-b-raised-power">
+            </form>
+          </div>
+
+           <!-- <button id="matrix-b-raised-btn" class="pointer ">B<sup>n</sup></button> -->
+
+
           <button id="matrix-b-transpose-btn" class="pointer ">TRANSPOSE B</button>
           <button type="submit" id="matrix-b-clear-btn" class="pointer ">CLEAR B</button>
-
         </div>
       </div>
 
@@ -92,63 +99,18 @@
     </div>
 
 
-    <!-- <button type="submit" id="compute-btn" class="pointer">COMPUTE</button>  -->
-
-
-<!-- 
-    <div class="matrix-buttons-container">
-      <div class="matrix-a-buttons">
-        <div>
-          <button id="matrix-a-det-btn" class="pointer button">det(A)</button>
-          <button id="matrix-a-inverse-btn" class="pointer button">A<sup>-1</sup></button>
-        </div>
-        <button id="matrix-a-raised-btn" class="pointer ">A<sup><input type="number" id="matrix-a-raised-power" ></sup></button>
-        
-        <div>
-          <button id="matrix-a-transpose-btn" class="pointer ">TRANSPOSE  <br>   A</button>
-          <button type="submit" id="matrix-a-clear-btn" class="pointer ">CLEAR A</button>
-        </div>
-      </div> -->
-
-      <!-- <div class="">
-        <div>
-          <button id="matrix-b-det-btn" class="pointer">det(B)</button>
-          <button id="matrix-b-inverse-btn" class="pointer  ">B<sup>-1</sup></button>
-        </div>
-        <button id="matrix-b-raised" class="pointer ">B<sup><input type="number" id="matrix-b-raised-power" ></sup></button>
-        
-        <div>
-          <button id="matrix-b-transpose-btn" class="pointer ">TRANSPOSE B</button>
-          <button type="submit" id="matrix-b-clear-btn" class="pointer ">CLEAR B</button>
-        </div>
-      </div>
-    </div> -->
-
-
-    <!-- <button type="submit" id="compute-btn" class="pointer">COMPUTE</button> -->
-
-
   <div class="solution-container">
     <div class="result-wrapper">
-      <!-- 5 divs: will ocupy two matrices, binary operator, =, and result 
+      <!-- 5 divs: will ocupy two matrices(table form), binary operator, =, and result 
       || will ocupy unary op, one matrix, =, and result-->
-      <div class="one"></div>
+      <div></div>
       <div class="two"></div>
       <div class="three"></div>
       <div class="four"></div>
       <div class="five"></div>
   </div>
-    <!--  
-      <div id="inputed-matrix-a"></div>
-      TABLE A HERE
-      <div id="inputed-operator"></div>
-      <div id="inputed-matrix-b"></div>
-      TABLE B HERE
-    -->  
-
     <div class="res"></div>
   </div>
-
 </div>
 
 

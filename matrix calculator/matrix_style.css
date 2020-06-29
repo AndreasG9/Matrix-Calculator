@@ -17,12 +17,12 @@
   --b-m:0; 
   --b-n:0; 
 
-  --bracket-y-scale: 1; 
+  /* --bracket-y-scale: 1; 
   --top1: 1px; 
 
   --small-bracket-y-scale: 1; 
 
-  --matrix-a-buttons-width: 1; 
+  --matrix-a-buttons-width: 1;  */
 
 }
 
@@ -38,7 +38,7 @@ ul{
 }
 
 table{
-  border-spacing: .8px;
+  border-spacing: 5px;
 }
 
 td {
@@ -50,11 +50,8 @@ td {
 
 
 .main-header{
-  /* background: linear-gradient(to right, #87CEFA, #00FA9A,	#F0FFFF); */
   background: linear-gradient(to right, rgb(121,154,185),#d6e0ea, #6ba5a1);
-  /* rgb(136,174,173)*/
   text-align: center;
- /* font-variant: small-caps;  */
   margin-top: 10px;
   border-top: 5px solid #000000;
   border-bottom: 5px solid #000000;
@@ -200,14 +197,15 @@ span.right-bracket{
   margin-top: 10px;
 }
 
+.main-container .matrices-container .matrix-label{
+  text-align: left;
+  margin-left: 50px;
+  font-weight: bold;
+}
+
 .main-container .matrices-container .operator{
   align-self: center;
-
-  /* margin-bottom: 100px;
-  align-self: center; */
-  /* margin-left: auto; */
-
-  margin-bottom: 50px;
+  margin-bottom: 100px;
 }
 
 .main-container .matrices-container #swap-btn{
@@ -217,7 +215,6 @@ span.right-bracket{
 .main-container .matrices-container #matrix-operator{
   margin-left: 8px;
 }
-
 
 .main-container .matrices-container #compute-btn{
   width: 80px;
@@ -232,13 +229,9 @@ span.right-bracket{
   border: 2px solid #333333; 
 }
 
-
 .main-container .matrices-container .matrix-grid-a,
 .main-container .matrices-container .matrix-grid-b{
-  /* border: 2px solid #333;  */
   width: max-content; 
-/* 
-  border: 2px solid #333333;  */
 }
 
 .template{
@@ -257,30 +250,67 @@ span.right-bracket{
   grid-template-columns: repeat(var(--b-n), 50px);
 }
 
-
-
-
-
 .main-container .button{
   text-align: center;
 }
 
-.main-container #matrix-a-raised-btn,
-.main-container #matrix-b-raised-btn{
-  text-align: left;
+.main-container .matrices-container .matrix-buttons .exponential-box{
   grid-column: span 2;
 }
 
-.main-container #matrix-a-raised-power, 
+.main-container .matrices-container .matrix-buttons .exponential{
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.main-container #matrix-a-raised-btn, 
+.main-container #matrix-b-raised-btn{
+  grid-column: span 3;
+  width: 140px; 
+}
+
+.main-container .matrices-container .matrix-buttons .exponential #matrix-a-raised-power,
+.main-container .matrices-container .matrix-buttons .exponential #matrix-b-raised-power{
+  width: 45px;
+  /* border: 0 none;  */
+  border-color: rgb(121,154,185);
+  border-radius: 10%; 
+  height: 25px;
+  align-self: center;
+}
+
+
+
+
+
+
+/* .main-container #matrix-a-raised-power, 
 .main-container #matrix-b-raised-power{
   width: 80px; 
   height: 20px;
+} */
+
+
+
+.main-container .matrices-container .matrix-buttons #matrix-a-transpose-btn, 
+.main-container .matrices-container .matrix-buttons #matrix-b-transpose-btn{
+  grid-row: 3/4;
+  grid-column: 1/2;
 }
 
+.main-container .matrices-container .matrix-buttons #matrix-a-clear-btn, 
+.main-container .matrices-container .matrix-buttons #matrix-b-clear-btn{
+  grid-row: 3/4;
+  grid-column: 2/3;
+}
+
+
+
 .main-container .solution-container{
-  border: 5px solid rgb(121,154,185); 
+  border: 5px solid #6ba5a1; 
   margin-top: 40px;
-  min-width: 200px;
+  min-width: 300px;
   min-height: 100px;
   transform: scale(0);
 }
@@ -294,17 +324,9 @@ span.right-bracket{
 }
 
 .main-container .solution-container .result-wrapper  > div{
-  /* border: 2px solid black;  */
   max-height: fit-content;
-  /* max-width: fit-content; */
 }
 
-
-.main-container .matrices-container .matrix-label{
-  text-align: left;
-  margin-left: 10px;
-  font-weight: bold;
-}
 
 
 .warning-box{
@@ -367,58 +389,9 @@ span.right-bracket{
   pointer-events: all;
 }
 
-
 input[type="number"] {
   font-size:18px;
 }
-
-
-/* .main-container .matrix-a-buttons div #matrix-a-det-btn{
-
-  width: 60px;
-  height: 40px;
-}
-
-.main-container .matrix-a-buttons div #matrix-a-inverse-btn{
-  width: 60px; 
-  height: 40px;
-}
-
-
-
-.main-container .matrix-a-buttons #matrix-a-raised{
-  width: 100px;
-  height: 40px; 
-}
-.main-container .matrix-a-buttons #matrix-a-raised-power{
-  width: 40px;
-  height: 20px;
-}
-
-.main-container .matrix-a-buttons #matrix-a-transpose-btn{
-  
-  height: 40px;
-}
-
-.main-container .matrix-a-buttons #matrix-a-clear-btn{
-  width: 60px; 
-  height: 40px;
-}
-
-.main-container .matrix-b-buttons{
-  border: 2px solid #333;
-}
-
-*/ 
-
-/* .main-container #compute-btn{
-  width: 100px;
-  height: 40px;
-  align-self: center;
-  margin-left: 20px;
-}  */
-
-
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
   -webkit-appearance: none;
