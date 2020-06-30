@@ -193,8 +193,12 @@ span.right-bracket{
   display: grid;
   grid-template-columns: 2fr .5fr 2fr .5fr;
   gap: 10px;
-  border: 5px solid rgb(121,154,185); 
-  margin-top: 10px;
+  border: 8px solid rgb(121,154,185); 
+  /* border-color: rgb(121,154,185) #6ba5a1; */
+  /* border-width: 0 8px 8px 0;  */
+
+  border-color: rgb(121,154,185) #ffffff;
+  margin-top: 20px;
 }
 
 .main-container .matrices-container .matrix-label{
@@ -281,18 +285,6 @@ span.right-bracket{
 }
 
 
-
-
-
-
-/* .main-container #matrix-a-raised-power, 
-.main-container #matrix-b-raised-power{
-  width: 80px; 
-  height: 20px;
-} */
-
-
-
 .main-container .matrices-container .matrix-buttons #matrix-a-transpose-btn, 
 .main-container .matrices-container .matrix-buttons #matrix-b-transpose-btn{
   grid-row: 3/4;
@@ -308,8 +300,9 @@ span.right-bracket{
 
 
 .main-container .solution-container{
-  border: 5px solid #6ba5a1; 
-  margin-top: 40px;
+  border: 5px solid #6ba5a1 ;
+  /* border-color: #6ba5a1 #ffffff;  */
+  margin-top: 30px;
   min-width: 300px;
   min-height: 100px;
   transform: scale(0);
@@ -402,3 +395,4 @@ input[type=number] {
   -moz-appearance: textfield;
   text-align: center;
 }
+

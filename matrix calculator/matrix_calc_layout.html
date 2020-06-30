@@ -47,9 +47,9 @@
             <button id="matrix-a-inverse-btn" class="pointer button">A<sup>-1</sup></button>
 
             <div class="exponential-box">
-              <form action="" class="exponential">
-                <button id="matrix-a-raised-btn" class="pointer ">A<sup>n</sup></button>
-                <input type="number" name="" id="matrix-a-raised-power">
+              <form action="" class="exponential" name="testing">
+                <button type="button" id="matrix-a-raised-btn" class="pointer" >A<sup>n</sup></button>
+                <input type="number" name="matrix-a-raised-power" id="matrix-a-raised-power" onkeydown="return (event.keyCode!=13);">
               </form>
             </div>
 
@@ -78,12 +78,10 @@
           <button id="matrix-b-det-btn" class="pointer">det(B)</button>
           <button id="matrix-b-inverse-btn" class="pointer  ">B<sup>-1</sup></button>
 
-
-
           <div class="exponential-box">
             <form action="" class="exponential">
-              <button id="matrix-b-raised-btn" class="pointer ">B<sup>n</sup></button>
-              <input type="number" name="" id="matrix-b-raised-power">
+              <button type="button" id="matrix-b-raised-btn" class="pointer"">B<sup>n</sup></button>
+              <input type="number" name="" id="matrix-b-raised-power" onkeydown="return (event.keyCode!=13);">
             </form>
           </div>
 
