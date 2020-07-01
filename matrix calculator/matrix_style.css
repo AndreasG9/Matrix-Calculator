@@ -193,11 +193,11 @@ span.right-bracket{
   display: grid;
   grid-template-columns: 2fr .5fr 2fr .5fr;
   gap: 10px;
-  border: 8px solid rgb(121,154,185); 
-  /* border-color: rgb(121,154,185) #6ba5a1; */
-  /* border-width: 0 8px 8px 0;  */
+  border: 8px solid;
+  border-color:#6ba5a1 rgb(121,154,185) rgb(121,154,185) #6ba5a1;
 
-  border-color: rgb(121,154,185) #ffffff;
+
+  margin: 0 auto;
   margin-top: 20px;
 }
 
@@ -224,6 +224,7 @@ span.right-bracket{
   width: 80px;
   height: 40px;
   margin-top: 60%; 
+  margin-right: 5px;
 }
 
 .main-container .matrices-container .matrix-buttons{

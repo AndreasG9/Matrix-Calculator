@@ -1,7 +1,5 @@
 // Andreas Gagas - Matrix-Calculator 
 
-
-
 // quickly change default size (default matrix SQUARED)
 const DEFAULT_M = 2; 
 const DEFAULT_N = 2; 
@@ -12,16 +10,6 @@ let matrix_a = [];
 let matrix_b = []; 
 let am_input, an_input, bm_input, bn_input = 0; 
 let a_visible, b_visible = false; 
-
-
-// MODULARIZE / format better TODO 
-function init_default(){
-  // default display two 2x2 matrices 
-  // add templates to class list
-}
-
-
-init_default(); 
 
 // testing
 matrix_a = [[2,2], [2,2]];
@@ -88,13 +76,13 @@ document.querySelector("#create-btn").addEventListener("click", () => {
 
   msg = "";
   
-  if((am_input > 50) || (an_input > 100)) msg += "<i><u> A </u></i>";
-  if((bm_input > 50) || (bn_input > 100)) msg += "<i><u> B </u></i>";
+  if((am_input > 100) || (an_input > 50)) msg += "<i><u> A </u></i>";
+  if((bm_input > 100) || (bn_input > 25)) msg += "<i><u> B </u></i>";
 
   if(msg.length > 1) {
     // random limit 
     // a 50x100 will take a few seconds to create ... 
-    warning_msg(`Matrix: ${msg} is TOO LARGE ... <br> m < 50 && n < 100`); 
+    warning_msg(`FIX FIX Matrix: ${msg} is TOO LARGE ... <br> m < 200 && n < 50`); 
     event.preventDefault();
     return; 
   }
@@ -343,8 +331,9 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
 }
 
 
-// -------------------------- Compute Unary Operation ---------------------------
 
+
+// -------------------------- Compute Unary Operation ---------------------------
 // -------------------------- Matrix raised power ---------------------------
 document.querySelector("#matrix-a-raised-btn").addEventListener("click", () => {
 
@@ -372,6 +361,15 @@ document.querySelector("#matrix-b-raised-btn").addEventListener("click", () => {
   calc_matrix_power("B", matrix_grid_b, bm_input, bn_input, power); 
 }); 
 
+// -------------------------- Calculate Inverse of Matrix (A or B) ---------------------------
+document.querySelector("#matrix-a-inverse-btn").addEventListener("click", () => {  
+  calc_matrix_power("A", matrix_grid_a, am_input, an_input, -1);
+}); 
+
+document.querySelector("#matrix-b-inverse-btn").addEventListener("click", () => {
+  calc_matrix_power("B", matrix_grid_b, bm_input, bn_input, -1);
+});
+
 function calc_matrix_power(char, matrix_grid, m, n, power){
   // matrix raised positive value:  must be square 
   // matrix raised neg value: square, det != 0 (matrix must NOT be singular)
@@ -380,7 +378,7 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
   let matrix = read_input(matrix_grid, m, n); 
   if(missing_element_single_matrix(matrix)) return; // err, missing element
 
-  if(power > POWER_MAX){
+  if((power > POWER_MAX) || power < -POWER_MAX){
     warning_msg(`Exceed POWER_MAX: ${POWER_MAX}`); 
     return; 
   }
@@ -419,13 +417,13 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
 
     // TODO: det != 0 
 
+
     
   }
 
-
-  
   display_result_unary(char, result, matrix_2d, m, n, power); 
 }
+
 
 function multiply_square_matrix(matrix_a_2d, matrix_b_2d, m, n){
   // similar to mul matrix, less params, will be called power amount of times 
@@ -449,31 +447,29 @@ function multiply_square_matrix(matrix_a_2d, matrix_b_2d, m, n){
 }
 
 
-// -------------------------- Calculate Inverse of Matrix (A or B) ---------------------------
-document.querySelector("#matrix-a-inverse-btn").addEventListener("click", () => {
-  // make sure matrix is square and det != 0 (must be singular), call helper func. 
-
-  // if(is_square(am_input, an_input)) return; // err, not square 
-  // if(max_square(am_input, an_input)) return; // exceed limit 
-  // // TODO: det != 0 
-  // compute_unary(matrix_grid_a, am_input, an_input, "inverse"); 
-
-  calc_matrix_power("A", matrix_grid_a, am_input, an_input, -1);
-
-}); 
-
-document.querySelector("#matrix-b-inverse-btn").addEventListener("click", () => {
-  
-});
-
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-det-btn").addEventListener("click", () => { 
-  calc_det(matrix_grid_a, am_input, an_input); 
+  calc_det("A", matrix_grid_a, am_input, an_input); 
 });
 
-function calc_det(matrix, m, n){
-  // needs to be square 
+document.querySelector("#matrix-b-det-btn").addEventListener("click", () => { 
+  calc_det("B", matrix_grid_b, bm_input, bn_input); 
+});
+
+function calc_det(char, matrix_grid, m, n){
+  /*
+  needs to be square 
+  use cofactor expansions det(A) = (row whatever first cofactor w/ sign * det(minor))(second cofactor w/ sign * det(mint)) ... 
+  (minor (i,j): matrix remove current row(i) and column(j)
+  cofactor: det of that remaining matrix * (-1)^ij) 
+  cofactor signs 
+  signs of cofactors | +-+ ... )
+                    | -+- ... ) 
+                      ... 
+  just use the first row for cofactors 
+  */ 
+
   if(m != n){
     warning_msg("Not a SQUARE matrix");
     return; 
@@ -484,7 +480,81 @@ function calc_det(matrix, m, n){
     return; 
   }
 
-  // cofactor method ... 
+  let matrix = read_input(matrix_grid, m, n); 
+  if(missing_element_single_matrix(matrix)) return; // err, missing element
+
+  let matrix_2d = make_2d(matrix, m, n); 
+
+  if(matrix_2d.length == 1){
+    // det(1x1) is value of that element 
+    display_result_unary(`det(${char})`, matrix_2d, matrix_2d, m, n, ""); 
+    return; 
+  }
+
+  let det = determinant(matrix_2d, n); 
+  console.log(det); 
+  
+  //display_result_unary(`det(${char})`, det, matrix_2d, m, n, ""); 
+}
+
+function determinant(matrix_2d, n){
+  // seperate functions, inverse and neg power calcultions will need access to both 
+  // func. called recursively until single element / the det for that sub matrix 
+
+  let det = 0; 
+
+  if(n == 1){
+    // signal end recursion 
+    // only single element, which is the det 
+    return matrix_2d[0][0]; 
+  }
+
+  let cofactors = new Array(n).fill(0).map(() => new Array(n).fill(0)); // new col, reset cofactors 
+  let sign = 1; // +1 or -1 
+  
+  for(let i=0; i<n; ++i){
+    // first row for cofactors 
+    // cofactors(...) func will fill cofactors[r][c] appropriately (r=0 or first row)
+    store_cofactors(matrix_2d, cofactors, n, 0, i);
+    det += sign * matrix_2d[0][i] * determinant(cofactors, n-1); // det += c(i,j) <-- = (-1)^(i,j) * det(A(i,j) or minor)
+
+    // flip sign 
+    sign = -sign; 
+
+    // move next cofactor (next col of the first row) ... 
+  }
+
+  return det; 
+}
+
+function store_cofactors(matrix_2d, cofactors, n, r, c){
+  // if 2x2 just single element 
+  // row is always 0 
+  // return/ store resulting matrix (elements not in a cofactor row and col) in cofactors arr 
+
+  let a = 0 , b = 0; 
+
+  for(let i=0; i<n; ++i){
+    for(let j=0; j<n; ++j){
+
+      if((i != r) && (j != c)){
+        // element not in current row and column, store 
+        cofactors[a][b] = matrix_2d[i][j];
+        // console.log(`cofactors[${i}][${j}]: ${cofactors[i][j]}`); 
+
+        if(b < (n-2)){
+          // move next col 
+          ++b; 
+        }
+        else{
+          // no more col left, reset col move next row 
+          b = 0; 
+          ++a; 
+        }
+      }
+    }
+  }
+
 }
 
 
@@ -591,8 +661,11 @@ function display_result_unary(char, result, matrix, m, n, option){
     m = n; 
     n = temp; 
   }
+
   make_table(divs[3], result, m, n); 
 }
+
+
 
 
 function brackets(target){
@@ -612,16 +685,9 @@ function make_table(target, matrix, m, n){
   // target is location to put the matrix
   // table will match the result matrix, add each element in appropriate index 
 
-
   let table = document.createElement("table"); 
   table.classList.add("matrix-table"); 
   target.appendChild(table); 
-
-  // let left_bracket = document.createElement("span");
-  // left_bracket.innerHTML = "["; 
-  // table.parentNode.insertBefore(left_bracket, table); 
-
-  // table.classList.add("testing"); 
 
   for(let i=0; i<m; ++i){
     let table_row = document.createElement("tr"); 
@@ -634,11 +700,6 @@ function make_table(target, matrix, m, n){
       table_row.appendChild(table_data); 
     }
   }
-
-   
-}
-
-function brackets(target){
 
 }
 
@@ -728,8 +789,6 @@ document.querySelector("#close-btn").addEventListener("click", () => {
   const overlay = document.querySelector("#overlay-background"); 
   overlay.classList.toggle("active"); 
 }); 
-
-// MOVE to function, dont repeat 
 
 
 // let root = document.documentElement; 
