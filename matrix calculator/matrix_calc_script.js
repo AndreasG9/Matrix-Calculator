@@ -439,27 +439,25 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
 
         result[i][j] = element; // string 
         inverse[i][j] = (adjoint[i][j] / det); // kept decimals, if need to calc matrix neg power 
-        
       }
     }
-
-    console.log(inverse); 
 
     if(power < -1){
       // use inverse to calc matrix negative power 
       // ex A^-4 = (A^-1)^4 
 
-      console.log(inverse);
       power = -power; 
+      result = [...inverse]; 
 
       for(let i=1; i<power; ++i){
         // mul inverse matrix * result matrix positive power amount of times 
         result = multiply_square_matrix(inverse, result, m, n); 
       }
 
+      // result matrix stored all elements in decimal form, convert to "fractions"
+      // if whole number, will be ignored in 2d matrix/ kept as a number  
+      convert_to_frac(result, n); 
     }
-
-
   }
 
   display_result_unary(char, result, matrix_2d, m, n, power); 
@@ -516,7 +514,44 @@ function calc_adjoint(matrix_2d, adjoint, n){
   return adjoint; 
 }
 
+function convert_to_frac(matrix_2d, n){
+  // convert decimal values to fractions, if rational 
+  // format: matrix_2d[i][j] = `${numerator} / ${denominator}` 
+   
+  for(let i=0; i<n; ++i){
+    for(let j=0; j<n; ++j){
 
+      if((matrix_2d[i][j] % 1) != 0){
+        // rational number, store as fraction 
+        matrix_2d[i][j] = dec_to_frac(matrix_2d[i][j]);  
+      }
+    }
+  }
+
+}
+
+function dec_to_frac(fraction){
+  // gcd of numerator, denominator
+  // divide num/gcd + "/" +  den/gcd
+
+  let places_after_decimal = fraction.toString().length-2; // length-1 b/c "." 
+  let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
+  let num = denom * fraction; // whole num 
+
+  let gcd_ = gcd(num, denom); 
+  num /= gcd_; 
+  denom /= gcd_;
+
+  return `${num} / ${denom} &nbsp;`; 
+}
+
+function gcd(a, b){
+  // euclidean algo 
+
+  if(b == 0) return a; 
+
+  return gcd(b, Math.floor((a % b))); 
+}
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-det-btn").addEventListener("click", () => { 
@@ -627,6 +662,7 @@ function store_cofactors(matrix_2d, cofactors, n, r, c){
 }
 
 
+
 // -------------------------- Transpose Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-transpose-btn").addEventListener("click", () => {
   transpose("A", matrix_grid_a, am_input, an_input); 
@@ -652,7 +688,6 @@ function transpose(char, matrix_grid, m, n){
     }
   }
 
-  console.log(transpose); 
   display_result_unary(char, transpose, matrix_2d, m, n, "T"); 
 }
 
@@ -688,8 +723,8 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   // display result 
   make_table(divs[4], result, am, bn); 
 
+  // TODO, show solution
 
-  // show solution
 
 }
 
@@ -882,13 +917,18 @@ document.querySelector("#close-btn").addEventListener("click", () => {
 
 
 
-// matrix_grid_values.addEventListener('keydown', input => {
-//   // input type is number, disable up/down arrow adjusting value 
-//   if (input.which == 38 || input.which == 40)
-//       input.preventDefault();
-// }
 
 
 // -------------------------- Arrow Keys nav size input ---------------------------
+
+
 // -------------------------- Arrow Keys Nav Matrix A ---------------------------
+matrix_grid_a.addEventListener('keydown', input => {
+  // input type is number, disable up/down arrow adjusting value 
+  if (input.which == 38 || input.which == 40) input.preventDefault();
+}); 
+
+
+
 // -------------------------- Arrow Keys Nav Matrix B ---------------------------
+
