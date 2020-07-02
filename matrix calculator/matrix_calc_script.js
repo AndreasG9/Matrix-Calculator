@@ -11,10 +11,10 @@ let matrix_b = [];
 let am_input, an_input, bm_input, bn_input = 0; 
 let a_visible, b_visible = false; 
 
-// testing
-matrix_a = [[2,2], [2,2]];
-matrix_b = [[2,2], [2,2]];
-mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
+// // testing
+// matrix_a = [[2,2], [2,2]];
+// matrix_b = [[2,2], [2,2]];
+// mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
 
 
 // ------------------------- DEFAULT DISPLAY TWO 2X2 MATRICES-----------------------------
@@ -383,14 +383,17 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
     return; 
   }
 
+  if(m != n){
+    warning_msg("Not a SQUARE matrix");
+    return; 
+  }
+
   let matrix_2d = make_2d(matrix, m, n); 
-
-  if(m != n) return; // err, not square 
-
   let result = new Array(m).fill(0).map(() => new Array(n).fill(0)); 
 
   if(power > 0){
     // positive power 
+
     result = [...matrix_2d]; // init, match original matrix 
 
     for(let i=1; i<power; ++i){
@@ -413,17 +416,54 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
   }
 
   else{
-    // inverse or neg. pow
+    // inverse or neg. pow (find inverse first)
 
-    // TODO: det != 0 
+    const det = calc_determinant(matrix_2d, n); 
+
+    if(det == 0){
+      warning_msg("Matrix is singular / non-invertible / det is equal to 0");
+      return; 
+    }
+
+    let adjoint = new Array(m).fill(0).map(() => new Array(n).fill(0));
+    calc_adjoint(matrix_2d, adjoint, n); 
+    let inverse = new Array(m).fill(0).map(() => new Array(n).fill(0)); // KEEP ELEMENTS AS DECIMALS 
+
+    // divide each element by det 
+    for(let i=0; i<m; ++i){
+      for(let j=0; j<n; ++j){
+
+        let element = (adjoint[i][j] / det).toString(); 
+
+        if(element.length > 1) element = `${adjoint[i][j]}/${det}`; // store as "fraction" if rational  
+
+        result[i][j] = element; // string 
+        inverse[i][j] = (adjoint[i][j] / det); // kept decimals, if need to calc matrix neg power 
+        
+      }
+    }
+
+    console.log(inverse); 
+
+    if(power < -1){
+      // use inverse to calc matrix negative power 
+      // ex A^-4 = (A^-1)^4 
+
+      console.log(inverse);
+      power = -power; 
+
+      for(let i=1; i<power; ++i){
+        // mul inverse matrix * result matrix positive power amount of times 
+        result = multiply_square_matrix(inverse, result, m, n); 
+      }
+
+    }
 
 
-    
   }
 
   display_result_unary(char, result, matrix_2d, m, n, power); 
 }
-
 
 function multiply_square_matrix(matrix_a_2d, matrix_b_2d, m, n){
   // similar to mul matrix, less params, will be called power amount of times 
@@ -446,18 +486,48 @@ function multiply_square_matrix(matrix_a_2d, matrix_b_2d, m, n){
   return product;
 }
 
+function calc_adjoint(matrix_2d, adjoint, n){
+  // similar method to finding det, use of cofactor func and calc_det func.
+  // fill entire cofactor matrix (det func only used first row), transpose  
+
+  if(n == 1){
+    // a is 1x1 adjoint will be 1
+    // resulting in an inverse of 1 / det(a)
+    adjoint[0][0] = 1; 
+    return; 
+  }
+
+  let cofactors = new Array(n).fill(0).map(() => new Array(n).fill(0));
+  let sign = 1; // +1 or -1 
+
+  // cofactors for every element 
+  for(let i=0; i<n; ++i){
+    for(let j=0; j<n; ++j){
+      store_cofactors(matrix_2d, cofactors, n, i, j); 
+
+      if((i+j) % 2 == 0) sign = 1;
+      else sign = -1; 
+
+      // transpose, swap row w/ col, no need to call transpose func 
+      adjoint[j][i] = sign * (calc_determinant(cofactors, n-1)); // explain calc_determinant func inside that func 
+    }
+  }
+
+  return adjoint; 
+}
+
 
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-det-btn").addEventListener("click", () => { 
-  calc_det("A", matrix_grid_a, am_input, an_input); 
+  determinant("A", matrix_grid_a, am_input, an_input); 
 });
 
 document.querySelector("#matrix-b-det-btn").addEventListener("click", () => { 
-  calc_det("B", matrix_grid_b, bm_input, bn_input); 
+  determinant("B", matrix_grid_b, bm_input, bn_input); 
 });
 
-function calc_det(char, matrix_grid, m, n){
+function determinant(char, matrix_grid, m, n){
   /*
   needs to be square 
   use cofactor expansions det(A) = (row whatever first cofactor w/ sign * det(minor))(second cofactor w/ sign * det(mint)) ... 
@@ -491,13 +561,12 @@ function calc_det(char, matrix_grid, m, n){
     return; 
   }
 
-  let det = determinant(matrix_2d, n); 
-  console.log(det); 
-  
-  //display_result_unary(`det(${char})`, det, matrix_2d, m, n, ""); 
+  let det = calc_determinant(matrix_2d, n); 
+
+  display_result_unary(`det(${char})`, det, matrix_2d, m, n, ""); 
 }
 
-function determinant(matrix_2d, n){
+function calc_determinant(matrix_2d, n){
   // seperate functions, inverse and neg power calcultions will need access to both 
   // func. called recursively until single element / the det for that sub matrix 
 
@@ -516,14 +585,14 @@ function determinant(matrix_2d, n){
     // first row for cofactors 
     // cofactors(...) func will fill cofactors[r][c] appropriately (r=0 or first row)
     store_cofactors(matrix_2d, cofactors, n, 0, i);
-    det += sign * matrix_2d[0][i] * determinant(cofactors, n-1); // det += c(i,j) <-- = (-1)^(i,j) * det(A(i,j) or minor)
+    det += sign * matrix_2d[0][i] * calc_determinant(cofactors, n-1); // det += c(i,j) <-- = (-1)^(i,j) * det(A(i,j) or minor)
 
     // flip sign 
     sign = -sign; 
 
     // move next cofactor (next col of the first row) ... 
   }
-
+  
   return det; 
 }
 
@@ -586,6 +655,7 @@ function transpose(char, matrix_grid, m, n){
   console.log(transpose); 
   display_result_unary(char, transpose, matrix_2d, m, n, "T"); 
 }
+
 
 // -------------------------- Display result from binary op ---------------------------
 function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, operator){
@@ -661,8 +731,18 @@ function display_result_unary(char, result, matrix, m, n, option){
     m = n; 
     n = temp; 
   }
+  
+  else if(char.includes("det")){
+    // no table, just display result 
 
-  make_table(divs[3], result, m, n); 
+    divs[3].innerHTML = result;
+    divs[3].style.fontWeight = "bold";  
+  }
+
+  else{
+    make_table(divs[3], result, m, n); 
+  }
+
 }
 
 
@@ -716,7 +796,7 @@ function same_size(am, an, bm, bn){
   // check, if both matrices must be equal 
 
   if((am != bm) || (an != bn)){
-    warning_msg("Both matrices must be equal"); 
+    warning_msg("Both matrices must be the same size"); 
     return 1;
   } 
 
