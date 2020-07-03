@@ -10,42 +10,39 @@ const POWER_MAX = 20;
 let matrix_a = []; 
 let matrix_b = []; 
 let am_input, an_input, bm_input, bn_input = 0; 
-let a_visible, b_visible = false; 
+let matrix_grid_a = null, matrix_grid_b = null; 
 
-// // testing
-// matrix_a = [[2,2], [2,2]];
-// matrix_b = [[2,2], [2,2]];
-// mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
-
-// init_default(); 
+init_default(); 
 
 // ------------------------- DEFAULT DISPLAY TWO 2X2 MATRICES-----------------------------
-let matrix_grid_a = document.querySelector(".matrix-grid-a");
-let matrix_grid_b = document.querySelector(".matrix-grid-b");
+function init_default(){
+  matrix_grid_a = document.querySelector(".matrix-grid-a");
+  matrix_grid_b = document.querySelector(".matrix-grid-b");
 
-for(i=0; i<(DEFAULT_M * DEFAULT_N); ++i){
-  // create square matrix, adjust css var to create correct template rows/ cols
-  let input = document.createElement("input"); 
-  let input2 = document.createElement("input"); 
-  input.classList.add("move");
-  input2.classList.add("move");
-  input.type="number"; 
-  input2.type="number"; 
-  
-  matrix_grid_a.appendChild(input);
-  matrix_grid_b.appendChild(input2);
-} 
+  for(i=0; i<(DEFAULT_M * DEFAULT_N); ++i){
+    // create square matrix, adjust css var to create correct template rows/ cols
+    let input = document.createElement("input"); 
+    let input2 = document.createElement("input"); 
+    input.classList.add("move");
+    input2.classList.add("move");
+    input.type="number"; 
+    input2.type="number"; 
+    
+    matrix_grid_a.appendChild(input);
+    matrix_grid_b.appendChild(input2);
+  } 
 
-document.documentElement.style.setProperty("--a-m", DEFAULT_M);
-document.documentElement.style.setProperty("--a-n", DEFAULT_N);
-document.documentElement.style.setProperty("--b-m", DEFAULT_M);
-document.documentElement.style.setProperty("--b-n", DEFAULT_N);
+  document.documentElement.style.setProperty("--a-m", DEFAULT_M);
+  document.documentElement.style.setProperty("--a-n", DEFAULT_N);
+  document.documentElement.style.setProperty("--b-m", DEFAULT_M);
+  document.documentElement.style.setProperty("--b-n", DEFAULT_N);
 
-matrix_grid_a.classList.add("template-grid-a", "template"); 
-matrix_grid_b.classList.add("template-grid-b", "template"); 
-am_input = 2, an_input = 2, bm_input = 2, bn_input = 2; 
+  matrix_grid_a.classList.add("template-grid-a", "template"); 
+  matrix_grid_b.classList.add("template-grid-b", "template"); 
+  am_input = 2, an_input = 2, bm_input = 2, bn_input = 2; 
 
-init_move(); // traverse default matrix with arrow keys 
+  init_move(); // traverse default matrix with arrow keys 
+}
 
 // ------------------------- Get matrix size -----------------------------
 document.querySelector("#create-btn").addEventListener("click", () => {
@@ -197,8 +194,17 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
 
   const err = missing_element(matrix_a, matrix_b); 
   if(err) return;
-  
+
+  // keep as 1d arr, swap matrices (can be diff sizes)
+
+  // matrix_grid_a matrix_grid b 
+
+  // A 
+
+  display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
+
   // TODO 
+
 }); 
 
 
@@ -207,8 +213,8 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
 document.querySelector("#compute-btn").addEventListener("click", () => {
   // binary operation, read data, call appropriate func 
 
-  if(a_visible) matrix_a = read_input(matrix_grid_a, am_input, an_input); 
-  if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
+  matrix_a = read_input(matrix_grid_a, am_input, an_input); 
+  matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
   let err = missing_element(matrix_a, matrix_b); // one or more inputs are missing 
   if(err) return; 
@@ -999,3 +1005,9 @@ function init_move(){
       if(e.keyCode == 39) if(this.nextElementSibling) this.nextElementSibling.focus(); // right arrow 
     }); 
 }
+
+
+// // testing
+// matrix_a = [[2,2], [2,2]];
+// matrix_b = [[2,2], [2,2]];
+// mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
