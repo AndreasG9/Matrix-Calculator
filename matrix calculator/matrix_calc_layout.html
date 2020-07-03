@@ -19,16 +19,16 @@
     <div class="size-container">
       <form action="" method=""></form>
         <label for="matrix a size" id=matrix-size-label>matrix A size:</label>
-        <input type="number" class="m-size" id="input-size-am">
+        <input type="number" class="m-size disable-scroll move-a" id="input-size-am">
         <span class="bold">x</span>
-        <input type="number" class="n-size" id="input-size-an">
+        <input type="number" class="n-size disable-scroll move-a" id="input-size-an">
 
         <div></div>
 
         <label for="matrix b size" id=matrix-size-label>matrix B size:</label>
-        <input type="number" class="m-size" id="input-size-bm">
+        <input type="number" class="m-size disable-scroll move-b" id="input-size-bm">
         <span class="bold"">x</span>
-        <input type="number" class="n-size" id="input-size-bn">
+        <input type="number" class="n-size disable-scroll move-b" id="input-size-bn">
         <div class="center-btn">
           <button type="submit" id="create-btn" class="pointer">CREATE</button>
        </div>
@@ -38,7 +38,7 @@
     <div class="matrices-container">
       <div class="">
         <div class="matrix-label" id="matrix-a-label">A</div> 
-        <form action="" class="matrix-grid-a">
+        <form action="" class="matrix-grid-a disable-scroll">
           <!-- DOM, insert matrix a here-->
         </form>
 
@@ -49,7 +49,7 @@
             <div class="exponential-box">
               <form action="" class="exponential" name="testing">
                 <button type="button" id="matrix-a-raised-btn" class="pointer" >A<sup>n</sup></button>
-                <input type="number" name="matrix-a-raised-power" id="matrix-a-raised-power" onkeydown="return (event.keyCode!=13);">
+                <input type="number" name="matrix-a-raised-power" id="matrix-a-raised-power" placeholder="+/-" onkeydown="return (event.keyCode!=13);">
               </form>
             </div>
 
@@ -69,7 +69,7 @@
 
       <div class="matrix-grid-b-container">
         <div class="matrix-label" id="matrix-b-label">B</div> 
-        <form action="" class="matrix-grid-b">
+        <form action="" class="matrix-grid-b disable-scroll">
           <!-- DOM, insert matrix b here-->
         </form>
 
@@ -81,7 +81,7 @@
           <div class="exponential-box">
             <form action="" class="exponential">
               <button type="button" id="matrix-b-raised-btn" class="pointer"">B<sup>n</sup></button>
-              <input type="number" name="" id="matrix-b-raised-power" onkeydown="return (event.keyCode!=13);">
+              <input type="number" name="" id="matrix-b-raised-power" placeholder="+/-" onkeydown="return (event.keyCode!=13);">
             </form>
           </div>
 

@@ -42,12 +42,9 @@ table{
 }
 
 td {
-  /* width: 100%;
-  height: 100%; */
   font-size: 1em;
   font-weight: bold;
 }
-
 
 .main-header{
   background: linear-gradient(to right, rgb(121,154,185),#d6e0ea, #6ba5a1);
@@ -57,101 +54,6 @@ td {
   border-bottom: 5px solid #000000;
   font-size: 1.1em;
 }
-
-.cursor-ptr{
-  cursor: pointer;
-}
-
-span.left-bracket, 
-span.right-bracket{
-  align-self: flex-start;
-  align-self: baseline;
-  font-size: 1.8rem;
-
-  /* font-size: 2em; */
-  /* transform: scale(1, 4); */
-  transform: scale(1, var(--bracket-y-scale));
-
-  /* margin-top: calc(7px * var(--bracket-y-scale));  */
-
-
-  position: relative;
-  top: var(--top1);
-
-  /* margin: 10px 5px 15px 5px;  */
-
-
-
-  visibility: hidden;
-
-  -webkit-touch-callout: none; 
-  -webkit-user-select: none; 
-  -khtml-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
-  user-select: none; 
-}
-
-
-.button #clear-button{
-  /* background-color: #87CEFA;   */
-  /* background-color: linear-gradient(to right ,rgb(129,129,129), rgb(166,166,166), rgb(203,203,203), rgb(221,221,221), rgb(255,255,255)); */
-  /* margin-left: 50px; */
-
-  background-color: #6ba5a1; 
-  background: linear-gradient(to right, #6ba5a1, #d6e0ea);
-  background: linear-gradient(to right, rgb(121,154,185) , #d6e0ea);
-  border: 2px solid black;
-  cursor: pointer;
-  box-shadow: 0 1px black;
-  /* padding: 4px 8px; */
-}
-
-.button #compute-button{
-  /* background-color: #00FA9A;  */
-  /* background-color: linear-gradient(to left ,rgb(129,129,129), rgb(166,166,166), rgb(203,203,203), rgb(221,221,221), rgb(255,255,255)); */
-  /*background: linear-gradient(to right, #87CEFA, #00FA9A,	#F0FFFF); */ 
-  
-  /* background-color: rgb(121,154,185); */
-  /* background: linear-gradient(to right, rgb(121,154,185), #d6e0ea); */
-  /* background: linear-gradient(to right, rgb(121,154,185) ,rgb(121,154,185), #d6e0ea); */
-  background: linear-gradient(to right, #6ba5a1, #d6e0ea);
-
-  border: 2px solid black;
-  cursor: pointer;
-  /* padding: 8px 16px; */
-  box-shadow: 0 1px black;
-} 
-
-
-.button #compute-button:active{
-  box-shadow: 0 .4px #000000;
-  transform: translateY(1px);
-}
-
-.button #clear-button:active{
-  box-shadow: 0 .4px #000000;
-  transform: translateY(1px);
-}
-
-
-/* .solution-box{
-  grid-row: 4/5;
-  grid-column: 1/4;
-  min-height: 100px;
-  min-width: 500px;
-  border: 3px solid #000000;
-  justify-self: left;
-  margin-bottom: auto;
-  border-radius: 2%;
-  background-color: #F0FFFF;
-  display: flex;
-
-  visibility: hidden;
-} */
-
-
-
 
 .main-container{
   display: flex;
@@ -168,6 +70,10 @@ span.right-bracket{
   font-weight: bold;
   font-size: 1.1em;
   text-align: center;
+}
+
+.cursor-ptr{
+  cursor: pointer;
 }
 
 .main-container .size-container{
@@ -278,13 +184,12 @@ span.right-bracket{
 .main-container .matrices-container .matrix-buttons .exponential #matrix-a-raised-power,
 .main-container .matrices-container .matrix-buttons .exponential #matrix-b-raised-power{
   width: 45px;
-  /* border: 0 none;  */
   border-color: rgb(121,154,185);
   border-radius: 10%; 
   height: 25px;
   align-self: center;
+  font-size: .8em;
 }
-
 
 .main-container .matrices-container .matrix-buttons #matrix-a-transpose-btn, 
 .main-container .matrices-container .matrix-buttons #matrix-b-transpose-btn{
@@ -298,8 +203,6 @@ span.right-bracket{
   grid-column: 2/3;
 }
 
-
-
 .main-container .solution-container{
   border: 5px solid #6ba5a1 ;
   /* border-color: #6ba5a1 #ffffff;  */
@@ -308,7 +211,6 @@ span.right-bracket{
   min-height: 100px;
   transform: scale(0);
 }
-
 
 .main-container .solution-container .result-wrapper{
   display: flex;
@@ -320,8 +222,6 @@ span.right-bracket{
 .main-container .solution-container .result-wrapper  > div{
   max-height: fit-content;
 }
-
-
 
 .warning-box{
   width: 800px;
@@ -360,7 +260,7 @@ span.right-bracket{
   font-weight: bold;
 }
 
- .warning-box #close-btn{
+.warning-box #close-btn{
   width: 80px;
   height: 30px;
   cursor: pointer;
@@ -396,4 +296,3 @@ input[type=number] {
   -moz-appearance: textfield;
   text-align: center;
 }
-

@@ -17,8 +17,7 @@ let a_visible, b_visible = false;
 // matrix_b = [[2,2], [2,2]];
 // mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
 
-//init_default(); 
-
+// init_default(); 
 
 // ------------------------- DEFAULT DISPLAY TWO 2X2 MATRICES-----------------------------
 let matrix_grid_a = document.querySelector(".matrix-grid-a");
@@ -44,11 +43,9 @@ document.documentElement.style.setProperty("--b-n", DEFAULT_N);
 
 matrix_grid_a.classList.add("template-grid-a", "template"); 
 matrix_grid_b.classList.add("template-grid-b", "template"); 
-
-a_visible = true, b_visible = true;  // 2x2 is displayed for both matrices 
 am_input = 2, an_input = 2, bm_input = 2, bn_input = 2; 
 
-
+init_move(); // traverse default matrix with arrow keys 
 
 // ------------------------- Get matrix size -----------------------------
 document.querySelector("#create-btn").addEventListener("click", () => {
@@ -158,6 +155,8 @@ function make_matrix(matrix_grid, m, n){
     input.classList.add("move"); 
     matrix_grid.appendChild(input);
   } 
+
+  init_move(); // L and R arrow keys to move 
 }
 
 // -------------------------- Clear Matrix (A or B) ---------------------------
@@ -193,8 +192,8 @@ function read_input(matrix_grid, m, n){
 document.querySelector("#swap-btn").addEventListener("click", () => {
   // matrix A <=> matrix B  
 
-  if(a_visible) matrix_a = read_input(matrix_grid_a, am_input, an_input); 
-  if(b_visible) matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
+  matrix_a = read_input(matrix_grid_a, am_input, an_input); 
+  matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
   const err = missing_element(matrix_a, matrix_b); 
   if(err) return;
@@ -700,6 +699,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
 // -------------------------- Display result from unary op ---------------------------
 function display_result_unary(char, result, matrix, m, n, option){
   // option is either the power or T for tranpose operation 
+  // char is A, B or det(A or B) 
   // A^option // B^option (matrix)^option = (result)
 
   console.log(result); 
@@ -722,7 +722,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   // display matrix/table w/ sup
   make_table(divs[1], matrix, m, n);
   divs[1].appendChild(super_script);
-  divs[1].style.display = "flex";
+  divs[1].style.display = "flex"; 
 
   // display = 
   divs[2].innerHTML = "="; 
@@ -736,7 +736,7 @@ function display_result_unary(char, result, matrix, m, n, option){
     n = temp; 
   }
   
-  else if(char.includes("det")){
+  if(char.includes("det")){
     // no table, just display result 
 
     divs[3].innerHTML = result;
@@ -806,12 +806,14 @@ function brackets(target){
   // target.parentNode.insertBefore(left_bracket, target); 
 }
 
+
 function make_table(target, matrix, m, n){
   // target is location to put the matrix
   // table will match the result matrix, add each element in appropriate index 
 
   let table = document.createElement("table"); 
-  table.classList.add("matrix-table"); 
+
+  // table.classList.add("matrix-table"); 
   target.appendChild(table); 
 
   for(let i=0; i<m; ++i){
@@ -925,68 +927,75 @@ document.querySelector("#close-btn").addEventListener("click", () => {
 // }
 
 
-// keep num scroll for matrix size, disable for matrix / grid 
-matrix_grid_a.addEventListener("keydown", (input) => {
-  // input type is number, disable up/down arrow adjusting value 
-  disable_scroll(input); 
-}); 
 
-matrix_grid_b.addEventListener("keydown", (input) => {
-  // input type is number, disable up/down arrow adjusting value 
-  disable_scroll(input); 
-}); 
+
+
+// // keep num scroll for matrix size, disable for matrix / grid 
+// matrix_grid_a.addEventListener("keydown", (input) => {
+//   // input type is number, disable up/down arrow adjusting value 
+//   disable_scroll(input); 
+// }); 
+
+// matrix_grid_b.addEventListener("keydown", (input) => {
+//   // input type is number, disable up/down arrow adjusting value 
+//   disable_scroll(input); 
+// }); 
+
+
+// -------------------------- Disable Input Num Scroll---------------------------
+let scroll = document.querySelectorAll(".disable-scroll");  
+
+for(let i=0; i<scroll.length; ++i){
+  scroll[i].addEventListener("keydown", (input) => {
+  disable_scroll(input);
+});
+}
 
 function disable_scroll(input){
   // input type is number, disable up/down arrow adjusting value 
   if(input.which == 38 || input.which == 40) input.preventDefault();
 }
 
+// -------------------------- Arrow Keys Nav Matriz size Inputs ---------------------------
+// "box" movement 
+const move_a = document.querySelectorAll(".move-a");
+const move_b = document.querySelectorAll(".move-b");
 
+move_a[0].addEventListener("keydown", (e) => {
+  if(e.keyCode == 39) move_a[1].focus();
+  if(e.keyCode == 40) move_b[0].focus();
+});
 
-// -------------------------- Arrow Keys nav size input ---------------------------
-// matrix a
-// matrix b 
+move_a[1].addEventListener("keydown", (e) => {
+  if(e.keyCode == 37) move_a[0].focus();
+  if(e.keyCode == 40) move_b[1].focus();
+  if(e.keyCode == 39) move_b[0].focus();
+});
+
+move_b[0].addEventListener("keydown", (e) => {
+  if(e.keyCode == 39) move_b[1].focus();
+  if(e.keyCode == 38) move_a[0].focus();
+  if(e.keyCode == 37) move_a[1].focus();
+});
+
+move_b[1].addEventListener("keydown", (e) => {
+  if(e.keyCode == 37) move_b[0].focus();
+  if(e.keyCode == 38) move_a[1].focus();
+});
 
 
 // -------------------------- Arrow Keys Nav Matrix A B ---------------------------
-let inputs = document.querySelectorAll(".move");
-for (var i = 0; i < inputs.length; i++)
-  inputs[i].addEventListener("keydown", function (event) {
-     
-    if (event.keyCode == 37) {
-      if (this.previousElementSibling) {
-        this.previousElementSibling.focus();
-      }
-      else{
-        
-      }
-    }
+function init_move(){
+  // new size matrix will not account for arr of input elements, this func will fix that issue when called 
 
-    else if(event.keyCode == 38){
-      // up 
+  let inputs = document.querySelectorAll(".move");
 
-
-      if (this.previousElementSibling) {
-        this.previousElementSibling.focus();
-      }
-    }
-
-    else if (event.keyCode == 39) {
-      if (this.nextElementSibling) {
-        this.nextElementSibling.focus();
-      }
-    }
-
-    else if(event.keyCode == 40){
-      // down 
-      // if (this.nextElementSibling) {
-      //   this.nextElementSibling.focus();
-      // }
-
-      
-    }
-  }, false);
-
-
-
-
+  for(let i=0; i<inputs.length; ++i)
+    // left and right arrow to "move" through matrix 
+    inputs[i].addEventListener("keydown", function (e) {
+  
+      if(e.keyCode == 37) if(this.previousElementSibling) this.previousElementSibling.focus(); // left arrow 
+  
+      if(e.keyCode == 39) if(this.nextElementSibling) this.nextElementSibling.focus(); // right arrow 
+    }); 
+}
