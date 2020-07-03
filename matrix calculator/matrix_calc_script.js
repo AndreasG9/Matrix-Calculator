@@ -6,6 +6,7 @@ const DEFAULT_N = 2;
 const SQUARE_MAX = 36; 
 const POWER_MAX = 20; 
 
+// let matrix_grid_a = null, matrix_grid_b = null; 
 let matrix_a = []; 
 let matrix_b = []; 
 let am_input, an_input, bm_input, bn_input = 0; 
@@ -16,6 +17,8 @@ let a_visible, b_visible = false;
 // matrix_b = [[2,2], [2,2]];
 // mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
 
+//init_default(); 
+
 
 // ------------------------- DEFAULT DISPLAY TWO 2X2 MATRICES-----------------------------
 let matrix_grid_a = document.querySelector(".matrix-grid-a");
@@ -25,6 +28,8 @@ for(i=0; i<(DEFAULT_M * DEFAULT_N); ++i){
   // create square matrix, adjust css var to create correct template rows/ cols
   let input = document.createElement("input"); 
   let input2 = document.createElement("input"); 
+  input.classList.add("move");
+  input2.classList.add("move");
   input.type="number"; 
   input2.type="number"; 
   
@@ -150,6 +155,7 @@ function make_matrix(matrix_grid, m, n){
     // create square matrix, 
     let input = document.createElement("input"); 
     input.type="number"; 
+    input.classList.add("move"); 
     matrix_grid.appendChild(input);
   } 
 }
@@ -425,6 +431,8 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
       return; 
     }
 
+    change_input_value(char); 
+    
     let adjoint = new Array(m).fill(0).map(() => new Array(n).fill(0));
     calc_adjoint(matrix_2d, adjoint, n); 
     let inverse = new Array(m).fill(0).map(() => new Array(n).fill(0)); // KEEP ELEMENTS AS DECIMALS 
@@ -432,13 +440,7 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
     // divide each element by det 
     for(let i=0; i<m; ++i){
       for(let j=0; j<n; ++j){
-
-        let element = (adjoint[i][j] / det).toString(); 
-
-        if(element.length > 1) element = `${adjoint[i][j]}/${det}`; // store as "fraction" if rational  
-
-        result[i][j] = element; // string 
-        inverse[i][j] = (adjoint[i][j] / det); // kept decimals, if need to calc matrix neg power 
+        result[i][j] = (adjoint[i][j] / det); // divide each element in adjoint matrix by det 
       }
     }
 
@@ -447,18 +449,16 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
       // ex A^-4 = (A^-1)^4 
 
       power = -power; 
-      result = [...inverse]; 
+      inverse = [...result]; 
 
       for(let i=1; i<power; ++i){
         // mul inverse matrix * result matrix positive power amount of times 
         result = multiply_square_matrix(inverse, result, m, n); 
       }
-
-      // result matrix stored all elements in decimal form, convert to "fractions"
-      // if whole number, will be ignored in 2d matrix/ kept as a number  
-      convert_to_frac(result, n); 
     }
   }
+
+  convert_to_frac(result, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
   display_result_unary(char, result, matrix_2d, m, n, power); 
 }
@@ -514,44 +514,13 @@ function calc_adjoint(matrix_2d, adjoint, n){
   return adjoint; 
 }
 
-function convert_to_frac(matrix_2d, n){
-  // convert decimal values to fractions, if rational 
-  // format: matrix_2d[i][j] = `${numerator} / ${denominator}` 
-   
-  for(let i=0; i<n; ++i){
-    for(let j=0; j<n; ++j){
+function change_input_value(char){
+  // click inverse button, make input value equal to -1 
 
-      if((matrix_2d[i][j] % 1) != 0){
-        // rational number, store as fraction 
-        matrix_2d[i][j] = dec_to_frac(matrix_2d[i][j]);  
-      }
-    }
-  }
-
+  let input = `#matrix-${char.toLowerCase()}-raised-power`; 
+  document.querySelector(input).value = -1; 
 }
 
-function dec_to_frac(fraction){
-  // gcd of numerator, denominator
-  // divide num/gcd + "/" +  den/gcd
-
-  let places_after_decimal = fraction.toString().length-2; // length-1 b/c "." 
-  let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
-  let num = denom * fraction; // whole num 
-
-  let gcd_ = gcd(num, denom); 
-  num /= gcd_; 
-  denom /= gcd_;
-
-  return `${num} / ${denom} &nbsp;`; 
-}
-
-function gcd(a, b){
-  // euclidean algo 
-
-  if(b == 0) return a; 
-
-  return gcd(b, Math.floor((a % b))); 
-}
 
 // -------------------------- Calculate Det of Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-det-btn").addEventListener("click", () => { 
@@ -780,6 +749,49 @@ function display_result_unary(char, result, matrix, m, n, option){
 
 }
 
+function convert_to_frac(matrix_2d, n){
+  // convert decimal values to fractions, if rational 
+  // format: matrix_2d[i][j] = `${numerator} / ${denominator}` 
+   
+  for(let i=0; i<n; ++i){
+    for(let j=0; j<n; ++j){
+
+      if((matrix_2d[i][j] % 1) != 0){
+        // rational number, store as fraction 
+        matrix_2d[i][j] = dec_to_frac(matrix_2d[i][j]);  
+      }
+    }
+  }
+
+}
+
+function dec_to_frac(fraction){
+  // num: denom * fraction 
+  // denom: 10 ^ places after decimal 
+  // gcd of numerator, denominator
+  // divide num/gcd + "/" +  den/gcd
+
+ // console.log(`fraction: ${fraction}`); 
+
+  let places_after_decimal = fraction.toString().length-1; // length-1 b/c "." 
+  let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
+  let num = denom * fraction; 
+
+  let gcd_ = gcd(num, denom); 
+  // simplify 
+  num /= gcd_;  
+  denom /= gcd_;
+
+  return `${num} / ${denom} &nbsp;`; 
+}
+
+function gcd(a, b){
+  // euclidean algo 
+
+  if(b == 0) return Math.abs(a); 
+
+  return gcd(b, Math.floor((a % b))); 
+}
 
 
 
@@ -792,8 +804,6 @@ function brackets(target){
 
 
   // target.parentNode.insertBefore(left_bracket, target); 
-
-
 }
 
 function make_table(target, matrix, m, n){
@@ -826,7 +836,7 @@ function reset_result(divs){
   }
 }
 
-// -------------------------- Small Err Check ---------------------------
+// -------------------------- Small Err Checks ---------------------------
 function same_size(am, an, bm, bn){
   // check, if both matrices must be equal 
 
@@ -853,7 +863,6 @@ function max_square(m,n){
   return 0; 
 }
 
-// -------------------------- Small Err Check ---------------------------
 function missing_element(matrix_a, matrix_b){
   // non-specific, if at least one element is missing, modal waring will sho wup 
 
@@ -916,19 +925,68 @@ document.querySelector("#close-btn").addEventListener("click", () => {
 // }
 
 
+// keep num scroll for matrix size, disable for matrix / grid 
+matrix_grid_a.addEventListener("keydown", (input) => {
+  // input type is number, disable up/down arrow adjusting value 
+  disable_scroll(input); 
+}); 
+
+matrix_grid_b.addEventListener("keydown", (input) => {
+  // input type is number, disable up/down arrow adjusting value 
+  disable_scroll(input); 
+}); 
+
+function disable_scroll(input){
+  // input type is number, disable up/down arrow adjusting value 
+  if(input.which == 38 || input.which == 40) input.preventDefault();
+}
 
 
 
 // -------------------------- Arrow Keys nav size input ---------------------------
+// matrix a
+// matrix b 
 
 
-// -------------------------- Arrow Keys Nav Matrix A ---------------------------
-matrix_grid_a.addEventListener('keydown', input => {
-  // input type is number, disable up/down arrow adjusting value 
-  if (input.which == 38 || input.which == 40) input.preventDefault();
-}); 
+// -------------------------- Arrow Keys Nav Matrix A B ---------------------------
+let inputs = document.querySelectorAll(".move");
+for (var i = 0; i < inputs.length; i++)
+  inputs[i].addEventListener("keydown", function (event) {
+     
+    if (event.keyCode == 37) {
+      if (this.previousElementSibling) {
+        this.previousElementSibling.focus();
+      }
+      else{
+        
+      }
+    }
+
+    else if(event.keyCode == 38){
+      // up 
+
+
+      if (this.previousElementSibling) {
+        this.previousElementSibling.focus();
+      }
+    }
+
+    else if (event.keyCode == 39) {
+      if (this.nextElementSibling) {
+        this.nextElementSibling.focus();
+      }
+    }
+
+    else if(event.keyCode == 40){
+      // down 
+      // if (this.nextElementSibling) {
+      //   this.nextElementSibling.focus();
+      // }
+
+      
+    }
+  }, false);
 
 
 
-// -------------------------- Arrow Keys Nav Matrix B ---------------------------
 
