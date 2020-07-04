@@ -146,10 +146,10 @@ function make_matrix(matrix_grid, m, n){
   }
   
   for(i=0; i<(m*n); ++i){
-    // create square matrix, 
+    // create inputs for matrix, will set properties for css after 
     let input = document.createElement("input"); 
     input.type="number"; 
-    input.classList.add("move"); 
+    input.classList.add("move", "swap"); 
     matrix_grid.appendChild(input);
   } 
 
@@ -179,7 +179,7 @@ function read_input(matrix_grid, m, n){
 
   for(i=0; i<(m*n); ++i){
    // store input data, return matrix 
-    matrix_temp.push(parseInt(matrix_grid.elements[i].value)); 
+    matrix_temp.push(parseFloat(matrix_grid.elements[i].value)); 
   }
 
   return matrix_temp; 
@@ -192,20 +192,33 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
   matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
-  const err = missing_element(matrix_a, matrix_b); 
-  if(err) return;
+  // const err = missing_element(matrix_a, matrix_b); 
+  // if(err) return;
 
-  // keep as 1d arr, swap matrices (can be diff sizes)
+  // doesn't matter if there are any missing element/s
+  // matrices can be diff sizes 
 
-  // matrix_grid_a matrix_grid b 
-
-  // A 
 
   display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
 
-  // TODO 
+  // sizes are now swapped, fill inputs 
+  let ab = document.getElementsByClassName("swap");
+  let index  = 0; // ab contains inputs from both matrices, keep index as sizes can differ 
+
+  for(let i=0; i<matrix_b.length; ++i){
+    ab[index].value = matrix_b[i]; 
+    ++index; 
+  }
+
+  for(let i=0; i<matrix_a.length; ++i){
+    ab[index].value = matrix_a[i]; 
+    ++index; 
+  }
+
 
 }); 
+
+
 
 
 
@@ -448,23 +461,26 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
         result[i][j] = (adjoint[i][j] / det); // divide each element in adjoint matrix by det 
       }
     }
-
+    console.log(`INVERSE: ${result}`);
     if(power < -1){
       // use inverse to calc matrix negative power 
       // ex A^-4 = (A^-1)^4 
-
+      console.log(`INVERSE: ${result}`);
       power = -power; 
       inverse = [...result]; 
+      let temp = [...matrix_2d];
 
       for(let i=1; i<power; ++i){
         // mul inverse matrix * result matrix positive power amount of times 
-        result = multiply_square_matrix(inverse, result, m, n); 
+        result = multiply_square_matrix(inverse, temp, m, n); 
       }
+
+      console.log(`RESULT: ${result}`);
     }
   }
 
-  convert_to_frac(result, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
-
+  // convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+  // convert_to_frac(matrix_2d, m, n);
   display_result_unary(char, result, matrix_2d, m, n, power); 
 }
 
@@ -570,7 +586,7 @@ function determinant(char, matrix_grid, m, n){
     return; 
   }
 
-  let det = calc_determinant(matrix_2d, n); 
+  let det = calc_determinant(matrix_2d, m, n); 
 
   display_result_unary(`det(${char})`, det, matrix_2d, m, n, ""); 
 }
@@ -662,7 +678,7 @@ function transpose(char, matrix_grid, m, n){
     }
   }
 
-  display_result_unary(char, transpose, matrix_2d, m, n, "T"); 
+  display_result_unary(char, transpose, matrix_2d, m, n, "T"); // display 
 }
 
 
@@ -671,6 +687,8 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   // display both matrices with result (insert matrix as table)
 
   console.log(result); 
+
+  convert_to_frac(result, an, bm);
 
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
@@ -709,6 +727,8 @@ function display_result_unary(char, result, matrix, m, n, option){
   // A^option // B^option (matrix)^option = (result)
 
   console.log(result); 
+
+  convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
@@ -755,11 +775,11 @@ function display_result_unary(char, result, matrix, m, n, option){
 
 }
 
-function convert_to_frac(matrix_2d, n){
+function convert_to_frac(matrix_2d, m, n){
   // convert decimal values to fractions, if rational 
   // format: matrix_2d[i][j] = `${numerator} / ${denominator}` 
    
-  for(let i=0; i<n; ++i){
+  for(let i=0; i<m; ++i){
     for(let j=0; j<n; ++j){
 
       if((matrix_2d[i][j] % 1) != 0){
@@ -779,11 +799,13 @@ function dec_to_frac(fraction){
 
  // console.log(`fraction: ${fraction}`); 
 
-  let places_after_decimal = fraction.toString().length-1; // length-1 b/c "." 
+  let index = fraction.toString().indexOf(".");
+  let places_after_decimal = fraction.toString().length - index-1;
+
   let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
   let num = denom * fraction; 
-
   let gcd_ = gcd(num, denom); 
+
   // simplify 
   num /= gcd_;  
   denom /= gcd_;
@@ -921,31 +943,6 @@ document.querySelector("#close-btn").addEventListener("click", () => {
   const overlay = document.querySelector("#overlay-background"); 
   overlay.classList.toggle("active"); 
 }); 
-
-
-// let root = document.documentElement; 
-// root = document.querySelector("template-grid"); 
-
-// function set_attr(element, attr){
-//   for(var key in attr) {
-//     element.setAttribute(key, attr[key]);
-//   }
-// }
-
-
-
-
-
-// // keep num scroll for matrix size, disable for matrix / grid 
-// matrix_grid_a.addEventListener("keydown", (input) => {
-//   // input type is number, disable up/down arrow adjusting value 
-//   disable_scroll(input); 
-// }); 
-
-// matrix_grid_b.addEventListener("keydown", (input) => {
-//   // input type is number, disable up/down arrow adjusting value 
-//   disable_scroll(input); 
-// }); 
 
 
 // -------------------------- Disable Input Num Scroll---------------------------
