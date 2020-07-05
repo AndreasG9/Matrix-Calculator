@@ -42,8 +42,8 @@ table{
 }
 
 td {
-  font-size: 1em;
-  font-weight: bold;
+  font-size: 1.1em;
+  /* font-weight: bold; */
 }
 
 .main-header{
@@ -101,7 +101,6 @@ td {
   gap: 10px;
   border: 8px solid;
   border-color:#6ba5a1 rgb(121,154,185) rgb(121,154,185) #6ba5a1;
-
 
   margin: 0 auto;
   margin-top: 20px;
@@ -223,6 +222,19 @@ td {
   max-height: fit-content;
 }
 
+.main-container .solution-container .put-in-ab {
+  transform: scale(0);
+  margin-top: 10px;
+  margin-left: 15em; 
+  border: 3px solid; 
+  border-color: rgb(121,154,185) #ffffff #ffffff rgb(121,154,185); 
+  padding: 3px; 
+}
+
+.main-container .solution-container #put-in-b-btn{
+  margin-top: 5px;
+}
+
 .warning-box{
   width: 800px;
   max-width: 80%;
@@ -296,3 +308,8 @@ input[type=number] {
   -moz-appearance: textfield;
   text-align: center;
 }
+
+.res{
+  border: 2px solid black; 
+}
+

@@ -136,12 +136,6 @@ function display_matrix(am_input, an_input, bm_input, bn_input){
 
   else make_matrix(matrix_grid_a, DEFAULT_M, DEFAULT_N);
 
-
-  // display brackets 
-  // a 
-  // let left_bracket = document.querySelector(".left-bracket");
-  // let right_bracket = document.querySelector(".right-bracket");
-  // document.documentElement.style.setProperty("--bracket-y-scale", size*2.4); // scale bracket height 
 }
 
 function make_matrix(matrix_grid, m, n){
@@ -165,17 +159,15 @@ function make_matrix(matrix_grid, m, n){
 
 // -------------------------- Clear Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
-  // hide the solution box (if present), reset matrix inputs 
+  //  reset matrix inputs 
 
   document.querySelector(".matrix-grid-a").reset(); 
   //document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 document.querySelector("#matrix-b-clear-btn").addEventListener("click", () => {
-    // hide the solution box (if present), reset matrix inputs 
 
   document.querySelector(".matrix-grid-b").reset(); 
-  //document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
@@ -667,8 +659,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
 
   convert_to_frac(result, an, bm);
 
-  const solution_box = document.querySelector(".solution-container"); 
-  solution_box.style.transform ="scale(1)"; 
+  show_result_box();   // make solution box visible 
 
   // 4 divs, 1: matrix a, 2: operator, 3: matrix b, 4: = 5: result
   const wrapper = document.querySelector(".result-wrapper"); 
@@ -677,20 +668,20 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   reset_result(divs); // clear old result, if present 
   
   // display matrix a
-  make_table(divs[0], matrix_a, am, an); 
+  make_table(divs[0], matrix_a, am, an, false); 
   // brackets(divs[0]); 
 
   // display operator
   divs[1].innerHTML = operator; 
 
   // display matrix b 
-  make_table(divs[2], matrix_b, bm, bn); 
+  make_table(divs[2], matrix_b, bm, bn, false); 
 
   // display =
   divs[3].innerHTML = "="; 
 
   // display result 
-  make_table(divs[4], result, am, bn);  
+  make_table(divs[4], result, am, bn, true);  
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -701,13 +692,15 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   console.log(result); 
 
+  // for "put in a/b"
+  matrix_result = [...result]; 
+  result_m = m, result_n =n; 
+
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
   if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
-  // make solution box visible 
-  const solution_box = document.querySelector(".solution-container"); 
-  solution_box.style.transform ="scale(1)"; 
+  show_result_box();   // make solution box visible 
 
   // 4 divs, 1: matrix a/b^power, 2: matrix-table, 3: =, 4: result
   const wrapper = document.querySelector(".result-wrapper"); 
@@ -727,7 +720,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   else divs[0].innerHTML = `&nbsp;${char}<sup>${option}</sup>&nbsp;&nbsp;&#x2192;`; 
 
   // display matrix/table w/ sup
-  make_table(divs[1], matrix, m, n);
+  make_table(divs[1], matrix, m, n, false);
   divs[1].appendChild(super_script);
   divs[1].style.display = "flex"; 
 
@@ -751,13 +744,10 @@ function display_result_unary(char, result, matrix, m, n, option){
   }
 
   else{
-    make_table(divs[3], result, m, n); 
+    make_table(divs[3], result, m, n, true); 
+    divs[3].classList.add("res-matrix");
   }
 
-
-  // for "put in a/b"
-  matrix_result = [...result]; 
-  result_m = m, result_n =n; 
 }
 
 function convert_to_frac(matrix_2d, m, n){
@@ -804,7 +794,13 @@ function gcd(a, b){
   return gcd(b, Math.floor((a % b))); 
 }
 
-
+function show_result_box(){
+  // make solution box visible 
+  const solution_box = document.querySelector(".solution-container"); 
+  solution_box.style.transform ="scale(1)"; 
+  const ab = document.querySelector(".put-in-ab");
+  ab.style.transform = "scale(1)";
+}
 
 function brackets(target){
   // for result box 
@@ -818,7 +814,7 @@ function brackets(target){
 }
 
 
-function make_table(target, matrix, m, n){
+function make_table(target, matrix, m, n, bold){
   // target is location to put the matrix
   // table will match the result matrix, add each element in appropriate index 
 
@@ -833,6 +829,11 @@ function make_table(target, matrix, m, n){
 
     for(let j=0; j<n; ++j){
       let table_data = document.createElement("td");
+
+      if(bold){
+        table_data.style.fontWeight = "bold";
+        table_data.style.fontSize = "1.3em"; 
+      }
 
       table_data.innerHTML = matrix[i][j]; 
       table_row.appendChild(table_data); 
@@ -876,19 +877,16 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
 }); 
 
 // ------------------------- Put in A / B -----------------------------
+// when result is displayed, the data is stored in the global var matrix_result, along with its m and n 
+
 document.querySelector("#put-in-a-btn").addEventListener("click", () => {
-  put_in_ab("A", matrix_grid_a); 
+  make_matrix_with_values(matrix_result, matrix_grid_a, result_m, result_n);
 });
 
 document.querySelector("#put-in-b-btn").addEventListener("click", () => {
-  put_in_ab("A", matrix_grid_b); 
+  // put_in_ab("A", matrix_grid_b); 
+  make_matrix_with_values(matrix_result, matrix_grid_b, result_m, result_n);
 });
-
-function put_in_ab(char, matrix_grid){
-  // when result is displayed, the data is stored in the global var matrix_result, along with its m and n 
-
-  make_matrix_with_values(matrix_result, matrix_grid, result_m, result_n);
-}
 
 function make_matrix_with_values(result_2d, matrix_grid, m, n){
   // similar to make_matrix func, but assign values to the inputs 
