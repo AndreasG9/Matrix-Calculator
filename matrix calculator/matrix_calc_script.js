@@ -192,13 +192,6 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
   matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
-  // const err = missing_element(matrix_a, matrix_b); 
-  // if(err) return;
-
-  // doesn't matter if there are any missing element/s
-  // matrices can be diff sizes 
-
-
   display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
 
   // sizes are now swapped, fill inputs 
@@ -214,7 +207,6 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
     ab[index].value = matrix_a[i]; 
     ++index; 
   }
-
 
 }); 
 
@@ -449,7 +441,7 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
       return; 
     }
 
-    change_input_value(char); 
+    if(power == -1) change_input_value(char); // input power is changed from null to -1 as inverse button was selected 
     
     let adjoint = new Array(m).fill(0).map(() => new Array(n).fill(0));
     calc_adjoint(matrix_2d, adjoint, n); 
@@ -461,26 +453,22 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
         result[i][j] = (adjoint[i][j] / det); // divide each element in adjoint matrix by det 
       }
     }
-    console.log(`INVERSE: ${result}`);
+
     if(power < -1){
       // use inverse to calc matrix negative power 
       // ex A^-4 = (A^-1)^4 
-      console.log(`INVERSE: ${result}`);
-      power = -power; 
-      inverse = [...result]; 
-      let temp = [...matrix_2d];
 
-      for(let i=1; i<power; ++i){
+      let pos_power = -power; 
+      inverse = [...result]; // init, result is the inverse 
+
+      for(let i=1; i<pos_power; ++i){
         // mul inverse matrix * result matrix positive power amount of times 
-        result = multiply_square_matrix(inverse, temp, m, n); 
+          result = multiply_square_matrix(result, inverse, m, n);
       }
-
-      console.log(`RESULT: ${result}`);
     }
+
   }
 
-  // convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
-  // convert_to_frac(matrix_2d, m, n);
   display_result_unary(char, result, matrix_2d, m, n, power); 
 }
 
@@ -498,7 +486,7 @@ function multiply_square_matrix(matrix_a_2d, matrix_b_2d, m, n){
         // add result, increment k when row/ col is used 
         product[i][j] += matrix_a_2d[i][k] * matrix_b_2d[k][j]; 
       }
-      // console.log(product[i][j]); // NEW ELEMENT ADDED IN RESULT MATRIX 
+      //  console.log(product[i][j]); // NEW ELEMENT ADDED IN RESULT MATRIX 
     }
   }
 
@@ -743,7 +731,13 @@ function display_result_unary(char, result, matrix, m, n, option){
   super_script.innerHTML = option; 
 
   // display operation
-  divs[0].innerHTML = `&nbsp;${char}<sup>${option}</sup>&nbsp;&nbsp;&#x2192;`; 
+
+  if(option < 0){
+    // neg power, display as matrix inverse raised n power 
+    divs[0].innerHTML = `&nbsp;(${char}<sup>${-1}</sup>)<sup>${-option}</sup>&nbsp;&nbsp;&#x2192;`; 
+  }
+
+  else divs[0].innerHTML = `&nbsp;${char}<sup>${option}</sup>&nbsp;&nbsp;&#x2192;`; 
 
   // display matrix/table w/ sup
   make_table(divs[1], matrix, m, n);
@@ -796,8 +790,6 @@ function dec_to_frac(fraction){
   // denom: 10 ^ places after decimal 
   // gcd of numerator, denominator
   // divide num/gcd + "/" +  den/gcd
-
- // console.log(`fraction: ${fraction}`); 
 
   let index = fraction.toString().indexOf(".");
   let places_after_decimal = fraction.toString().length - index-1;
@@ -884,14 +876,14 @@ function is_square(m,n){
   return 0; 
 } 
 
-function max_square(m,n){
-  if((m*n) > SQUARE_MAX){
-    warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
-     return 1; 
-  }
+// function max_square(m,n){
+//   if((m*n) > SQUARE_MAX){
+//     warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
+//      return 1; 
+//   }
 
-  return 0; 
-}
+//   return 0; 
+// }
 
 function missing_element(matrix_a, matrix_b){
   // non-specific, if at least one element is missing, modal waring will sho wup 
@@ -918,6 +910,13 @@ function missing_element_single_matrix(matrix){
   }
 
   return 0; // success
+}
+
+function unexpected_char(matrix){
+
+
+
+  return 0; 
 }
 
 // -------------------------- Print Err ---------------------------
