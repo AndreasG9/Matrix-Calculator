@@ -82,13 +82,13 @@ document.querySelector("#create-btn").addEventListener("click", () => {
 
   msg = "";
   
-  if((am_input > 100) || (an_input > 50)) msg += "<i><u> A </u></i>";
-  if((bm_input > 100) || (bn_input > 25)) msg += "<i><u> B </u></i>";
+  if((am_input > 50) || (an_input > 25)) msg += "<i><u> A </u></i>";
+  if((bm_input > 50) || (bn_input > 25)) msg += "<i><u> B </u></i>";
 
   if(msg.length > 1) {
     // random limit 
     // a 50x100 will take a few seconds to create ... 
-    warning_msg(`FIX FIX Matrix: ${msg} is TOO LARGE ... <br> m < 200 && n < 50`); 
+    warning_msg(`Matrix: ${msg} is TOO LARGE ... <br> m <= 50 && n <= 25`); 
     event.preventDefault();
     return; 
   }
@@ -159,15 +159,16 @@ function make_matrix(matrix_grid, m, n){
 
 // -------------------------- Clear Matrix (A or B) ---------------------------
 document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
-  //  reset matrix inputs 
+  // reset matrix inputs and n power input if present 
 
   document.querySelector(".matrix-grid-a").reset(); 
-  //document.querySelector(".solution-container").style.transform = "scale(0)"; 
+  document.querySelector("#matrix-a-raised-power").value = "";
 });
 
 document.querySelector("#matrix-b-clear-btn").addEventListener("click", () => {
 
   document.querySelector(".matrix-grid-b").reset(); 
+  document.querySelector("#matrix-b-raised-power").value = "";
 });
 
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
@@ -183,11 +184,6 @@ function read_input(matrix_grid, m, n){
 
   return matrix_temp; 
 }
-
-
-
-
-
 
 
 
@@ -322,8 +318,6 @@ function mul_matrix(matrix_a_2d, matrix_b_2d, am, an, bm, bn){
 
   return 0; // success 
 }
-
-
 
 
 // -------------------------- Compute Unary Operation ---------------------------
@@ -657,7 +651,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   matrix_result = [...result];
   result_m = am, result_n = bn;
 
-  convert_to_frac(result, an, bm);
+  //convert_to_frac(result, an, bm);
 
   show_result_box();   // make solution box visible 
 
@@ -744,6 +738,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   }
 
   else{
+    
     make_table(divs[3], result, m, n, true); 
     divs[3].classList.add("res-matrix");
   }
@@ -803,7 +798,26 @@ function show_result_box(){
 }
 
 function brackets(target){
-  // for result box 
+  // for solution/result box 
+
+
+  // OR flex "[" matrix "]" "
+
+
+  // GIVEN NUM ROWS * table row height??? 
+  // up to 50 ROWS 
+
+
+
+
+
+  // given div 
+
+  // left: [
+  
+  // table: (already present)
+
+  // right: ] 
 
   // left bracket
   // let left_bracket = document.createElement("span");
@@ -819,8 +833,6 @@ function make_table(target, matrix, m, n, bold){
   // table will match the result matrix, add each element in appropriate index 
 
   let table = document.createElement("table"); 
-
-  // table.classList.add("matrix-table"); 
   target.appendChild(table); 
 
   for(let i=0; i<m; ++i){
@@ -832,7 +844,7 @@ function make_table(target, matrix, m, n, bold){
 
       if(bold){
         table_data.style.fontWeight = "bold";
-        table_data.style.fontSize = "1.3em"; 
+        table_data.style.fontSize = "1.4em"; 
       }
 
       table_data.innerHTML = matrix[i][j]; 
@@ -840,6 +852,7 @@ function make_table(target, matrix, m, n, bold){
     }
   }
 
+ target.classList.add("brackets");
 }
 
 function reset_result(divs){
@@ -907,7 +920,14 @@ function make_matrix_with_values(result_2d, matrix_grid, m, n){
     matrix_grid.appendChild(input);
   } 
 
+  document.documentElement.style.setProperty("--a-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
+  document.documentElement.style.setProperty("--a-n", n); 
+  document.documentElement.style.setProperty("--b-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
+  document.documentElement.style.setProperty("--b-n", n); 
+
   init_move(); // L and R arrow keys to move 
+
+
 }
 
 // document.documentElement.style.setProperty("--a-m", am_input); // adjust css var to create correct template rows/ cols after func compelte / format grid 
@@ -1044,7 +1064,7 @@ function init_move(){
 }
 
 
-// // testing
-// matrix_a = [[2,2], [2,2]];
-// matrix_b = [[2,2], [2,2]];
-// mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
+// testing
+matrix_a = [[2,2], [2,2]];
+matrix_b = [[2,2], [2,2]];
+mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
