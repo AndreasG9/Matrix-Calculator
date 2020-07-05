@@ -716,7 +716,10 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   console.log(result); 
 
-  convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+  convert_to_frac(matrix, m, n);
+
+  if(result.length > 1) convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+
 
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
@@ -776,7 +779,7 @@ function convert_to_frac(matrix_2d, m, n){
   for(let i=0; i<m; ++i){
     for(let j=0; j<n; ++j){
 
-      if((matrix_2d[i][j] % 1) != 0){
+      if(((matrix_2d[i][j] % 1) != 0)){
         // rational number, store as fraction 
         matrix_2d[i][j] = dec_to_frac(matrix_2d[i][j]);  
       }
@@ -997,8 +1000,8 @@ function init_move(){
     inputs[i].addEventListener("keydown", function (e) {
   
       if(e.keyCode == 37) if(this.previousElementSibling) this.previousElementSibling.focus(); // left arrow 
-  
-      if(e.keyCode == 39) if(this.nextElementSibling) this.nextElementSibling.focus(); // right arrow 
+
+      if(e.keyCode == 39) if(this.nextElementSibling) this.nextElementSibling.focus(); // left arrow 
     }); 
 }
 
