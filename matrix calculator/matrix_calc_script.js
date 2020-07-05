@@ -7,10 +7,17 @@ const SQUARE_MAX = 36;
 const POWER_MAX = 20; 
 
 // let matrix_grid_a = null, matrix_grid_b = null; 
-let matrix_a = []; 
-let matrix_b = []; 
-let am_input, an_input, bm_input, bn_input = 0; 
+// let matrix_a = []; 
+// let matrix_b = []; 
 let matrix_grid_a = null, matrix_grid_b = null; 
+let am_input, an_input, bm_input, bn_input = 0; 
+
+// used for "put in A/B"
+let matrix_result = []; 
+let result_m = 0, result_n = 0; 
+
+// every other variable is kept inside its function (aside from two on bottom for movement w/ arrow keys)
+
 
 init_default(); 
 
@@ -161,14 +168,14 @@ document.querySelector("#matrix-a-clear-btn").addEventListener("click", () => {
   // hide the solution box (if present), reset matrix inputs 
 
   document.querySelector(".matrix-grid-a").reset(); 
-  document.querySelector(".solution-container").style.transform = "scale(0)"; 
+  //document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 document.querySelector("#matrix-b-clear-btn").addEventListener("click", () => {
     // hide the solution box (if present), reset matrix inputs 
 
   document.querySelector(".matrix-grid-b").reset(); 
-  document.querySelector(".solution-container").style.transform = "scale(0)"; 
+  //document.querySelector(".solution-container").style.transform = "scale(0)"; 
 });
 
 // -------------------------- Get User Input of Matrix (A, B, or both, call whenever) ---------------------------
@@ -185,30 +192,8 @@ function read_input(matrix_grid, m, n){
   return matrix_temp; 
 }
 
-// ------------------------- SWAP -----------------------------
-document.querySelector("#swap-btn").addEventListener("click", () => {
-  // matrix A <=> matrix B  
 
-  matrix_a = read_input(matrix_grid_a, am_input, an_input); 
-  matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
-  display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
-
-  // sizes are now swapped, fill inputs 
-  let ab = document.getElementsByClassName("swap");
-  let index  = 0; // ab contains inputs from both matrices, keep index as sizes can differ 
-
-  for(let i=0; i<matrix_b.length; ++i){
-    ab[index].value = matrix_b[i]; 
-    ++index; 
-  }
-
-  for(let i=0; i<matrix_a.length; ++i){
-    ab[index].value = matrix_a[i]; 
-    ++index; 
-  }
-
-}); 
 
 
 
@@ -676,6 +661,10 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
 
   console.log(result); 
 
+  // save data for "put in a/b"
+  matrix_result = [...result];
+  result_m = am, result_n = bn;
+
   convert_to_frac(result, an, bm);
 
   const solution_box = document.querySelector(".solution-container"); 
@@ -701,11 +690,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   divs[3].innerHTML = "="; 
 
   // display result 
-  make_table(divs[4], result, am, bn); 
-
-  // TODO, show solution
-
-
+  make_table(divs[4], result, am, bn);  
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -716,11 +701,11 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   console.log(result); 
 
+  // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
+  if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
-  if(result.length > 1) convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
-
-
+  // make solution box visible 
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
 
@@ -734,7 +719,6 @@ function display_result_unary(char, result, matrix, m, n, option){
   super_script.innerHTML = option; 
 
   // display operation
-
   if(option < 0){
     // neg power, display as matrix inverse raised n power 
     divs[0].innerHTML = `&nbsp;(${char}<sup>${-1}</sup>)<sup>${-option}</sup>&nbsp;&nbsp;&#x2192;`; 
@@ -770,6 +754,10 @@ function display_result_unary(char, result, matrix, m, n, option){
     make_table(divs[3], result, m, n); 
   }
 
+
+  // for "put in a/b"
+  matrix_result = [...result]; 
+  result_m = m, result_n =n; 
 }
 
 function convert_to_frac(matrix_2d, m, n){
@@ -861,6 +849,74 @@ function reset_result(divs){
   }
 }
 
+// -------------------------- Misc ---------------------------
+// ------------------------- SWAP -----------------------------
+document.querySelector("#swap-btn").addEventListener("click", () => {
+  // matrix A <=> matrix B  
+
+  matrix_a = read_input(matrix_grid_a, am_input, an_input); 
+  matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
+
+  display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
+
+  // sizes are now swapped, fill inputs 
+  let ab = document.getElementsByClassName("swap");
+  let index  = 0; // ab contains inputs from both matrices, keep index as sizes can differ 
+
+  for(let i=0; i<matrix_b.length; ++i){
+    ab[index].value = matrix_b[i]; 
+    ++index; 
+  }
+
+  for(let i=0; i<matrix_a.length; ++i){
+    ab[index].value = matrix_a[i]; 
+    ++index; 
+  }
+
+}); 
+
+// ------------------------- Put in A / B -----------------------------
+document.querySelector("#put-in-a-btn").addEventListener("click", () => {
+  put_in_ab("A", matrix_grid_a); 
+});
+
+document.querySelector("#put-in-b-btn").addEventListener("click", () => {
+  put_in_ab("A", matrix_grid_b); 
+});
+
+function put_in_ab(char, matrix_grid){
+  // when result is displayed, the data is stored in the global var matrix_result, along with its m and n 
+
+  make_matrix_with_values(matrix_result, matrix_grid, result_m, result_n);
+}
+
+function make_matrix_with_values(result_2d, matrix_grid, m, n){
+  // similar to make_matrix func, but assign values to the inputs 
+
+  while(matrix_grid.hasChildNodes()){
+    // remove old matrix, if present 
+    matrix_grid.removeChild(matrix_grid.lastChild);
+  }
+
+  let result_1d = [].concat(...result_2d); // convert to 1d, easier to assign value to inputs 
+
+  for(i=0; i<(m*n); ++i){
+    // create inputs for matrix, will set properties for css after 
+    let input = document.createElement("input"); 
+    input.type="number"; 
+    input.value = result_1d[i]; 
+    input.classList.add("move", "swap"); 
+    matrix_grid.appendChild(input);
+  } 
+
+  init_move(); // L and R arrow keys to move 
+}
+
+// document.documentElement.style.setProperty("--a-m", am_input); // adjust css var to create correct template rows/ cols after func compelte / format grid 
+// document.documentElement.style.setProperty("--a-n", an_input); 
+// matrix_result = [...result]; 
+// result_m = m, result_n =n; 
+
 // -------------------------- Small Err Checks ---------------------------
 function same_size(am, an, bm, bn){
   // check, if both matrices must be equal 
@@ -878,15 +934,6 @@ function is_square(m,n){
 
   return 0; 
 } 
-
-// function max_square(m,n){
-//   if((m*n) > SQUARE_MAX){
-//     warning_msg(`No larger than a ${SQUARE_MAX} x ${SQUARE_MAX}`);
-//      return 1; 
-//   }
-
-//   return 0; 
-// }
 
 function missing_element(matrix_a, matrix_b){
   // non-specific, if at least one element is missing, modal waring will sho wup 
@@ -915,13 +962,6 @@ function missing_element_single_matrix(matrix){
   return 0; // success
 }
 
-function unexpected_char(matrix){
-
-
-
-  return 0; 
-}
-
 // -------------------------- Print Err ---------------------------
 function warning_msg(message){
   // present "pop-up" (toggle box and overlay) w/ warning msg 
@@ -948,7 +988,7 @@ document.querySelector("#close-btn").addEventListener("click", () => {
 
 
 // -------------------------- Disable Input Num Scroll---------------------------
-let scroll = document.querySelectorAll(".disable-scroll");  
+const scroll = document.querySelectorAll(".disable-scroll");  
 
 for(let i=0; i<scroll.length; ++i){
   scroll[i].addEventListener("keydown", (input) => {
