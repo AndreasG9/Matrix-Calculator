@@ -647,6 +647,9 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
 
   console.log(result); 
 
+  // check to make the result doesnt contain a value > Number.MAX_VALUE
+  if(check_max(result, am, bn)) return; 
+
   // save data for "put in a/b"
   matrix_result = [...result];
   result_m = am, result_n = bn;
@@ -691,6 +694,9 @@ function display_result_unary(char, result, matrix, m, n, option){
   console.log(result); 
 
   if(typeof result === "object"){
+
+    if(check_max(result, m, n)) return; 
+
     // for "put in a/b" 
     matrix_result = [...result]; 
     result_m = m, result_n =n; 
@@ -853,6 +859,8 @@ function reset_result(divs){
   }
 }
 
+
+
 // -------------------------- Misc ---------------------------
 
 // ------------------------- SWAP -----------------------------
@@ -997,6 +1005,22 @@ function missing_element_single_matrix(matrix){
   }
 
   return 0; // success
+}
+
+function check_max(matrix_2d, m, n){
+  // MAX_VALUE a number can be is 1.79E+308
+
+  for(let i=0; i<m; ++i){
+    for(let j=0; j<n; ++j){
+
+      if(matrix_2d[i][j] >= Number.MAX_VALUE){
+        warning_msg("Result Matrix contains an element that exceeds MAX_VALUE");
+        return 1; 
+      }
+
+    }
+  }
+  return 0; 
 }
 
 // -------------------------- Print Err ---------------------------
