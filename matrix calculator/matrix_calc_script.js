@@ -700,7 +700,7 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
-  if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+   if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
   show_result_box();   // make solution box visible 
 
@@ -770,18 +770,20 @@ function convert_to_frac(matrix_2d, m, n){
 
 }
 
-function dec_to_frac(fraction){
-  // num: denom * fraction 
+function dec_to_frac(decimal){
+  // num: denom * decimal 
   // denom: 10 ^ places after decimal 
   // gcd of numerator, denominator
   // divide num/gcd + "/" +  den/gcd
+  console.log(decimal);
 
-  let index = fraction.toString().indexOf(".");
-  let places_after_decimal = fraction.toString().length - index-1;
-  console.log(places_after_decimal);
+  let index = decimal.toString().indexOf(".");
+  let places_after_decimal = decimal.toString().length - index-1;
+
+  if(places_after_decimal >= 16) return decimal.toFixed(4); // repeating, num too high, will not fully simplify 
 
   let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
-  let num = denom * fraction; 
+  let num = denom * decimal; 
   let gcd_ = gcd(num, denom); 
 
   // simplify 
@@ -913,6 +915,8 @@ function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
     input.classList.add("move", "swap"); 
     matrix_grid.appendChild(input);
   } 
+
+  // assign correct values to variables 
 
   if(char == "A"){
     document.documentElement.style.setProperty("--a-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
@@ -1090,6 +1094,3 @@ mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2);
 // let product = new Array(a).fill(0).map(() => new Array(b).fill(0)); 
 
 // display_result_unary("det", 9, product, a, b, "");
-
-
-
