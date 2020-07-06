@@ -82,13 +82,13 @@ document.querySelector("#create-btn").addEventListener("click", () => {
 
   msg = "";
   
-  if((am_input > 50) || (an_input > 25)) msg += "<i><u> A </u></i>";
-  if((bm_input > 50) || (bn_input > 25)) msg += "<i><u> B </u></i>";
+  if((am_input > 25) || (an_input > 25)) msg += "<i><u> A </u></i>";
+  if((bm_input > 25) || (bn_input > 25)) msg += "<i><u> B </u></i>";
 
   if(msg.length > 1) {
     // random limit 
     // a 50x100 will take a few seconds to create ... 
-    warning_msg(`Matrix: ${msg} is TOO LARGE ... <br> m <= 50 && n <= 25`); 
+    warning_msg(`Matrix: ${msg} is TOO LARGE ... <br> m <= 25 && n <= 25`); 
     event.preventDefault();
     return; 
   }
@@ -662,20 +662,24 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   reset_result(divs); // clear old result, if present 
   
   // display matrix a
-  make_table(divs[0], matrix_a, am, an, false); 
-  // brackets(divs[0]); 
+  make_table(divs[0], matrix_a, am, an, false);
+  if(am == bm) brackets(divs[0], am, bn);
+  else brackets_alt(divs[0], am, bn);
 
   // display operator
   divs[1].innerHTML = operator; 
 
   // display matrix b 
   make_table(divs[2], matrix_b, bm, bn, false); 
+  if(am == bm) brackets(divs[2], am, bn);
+  else brackets_alt(divs[2], am, bn);
 
   // display =
   divs[3].innerHTML = "="; 
 
   // display result 
-  make_table(divs[4], result, am, bn, true);  
+  make_table(divs[4], result, am, bn, true);
+  brackets(divs[4], am, bn);
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -686,9 +690,13 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   console.log(result); 
 
-  // for "put in a/b"
-  matrix_result = [...result]; 
-  result_m = m, result_n =n; 
+  if(typeof result === "object"){
+    // for "put in a/b"'
+    matrix_result = [...result]; 
+    result_m = m, result_n =n; 
+  }
+
+  else matrix_result = result; 
 
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
@@ -717,6 +725,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   make_table(divs[1], matrix, m, n, false);
   divs[1].appendChild(super_script);
   divs[1].style.display = "flex"; 
+  brackets(divs[1], m , n);
 
   // display = 
   divs[2].innerHTML = "="; 
@@ -738,9 +747,9 @@ function display_result_unary(char, result, matrix, m, n, option){
   }
 
   else{
-    
+    // display table 
     make_table(divs[3], result, m, n, true); 
-    divs[3].classList.add("res-matrix");
+    brackets(divs[1], m , n);
   }
 
 }
@@ -791,42 +800,20 @@ function gcd(a, b){
 
 function show_result_box(){
   // make solution box visible 
+  // remove old bracket class, as display result from binary op shows 3 matrices, while display result from unary op shows 2 
+
   const solution_box = document.querySelector(".solution-container"); 
   solution_box.style.transform ="scale(1)"; 
   const ab = document.querySelector(".put-in-ab");
   ab.style.transform = "scale(1)";
+
+  const show = document.querySelectorAll(".show");
+  for(let i=0; i<show.length; ++i){
+
+    if(show[i].classList.contains("brackets")) show[i].classList.remove("brackets");
+    if(show[i].classList.contains("brackets-alt")) show[i].classList.remove("brackets-alt");
+  }
 }
-
-function brackets(target){
-  // for solution/result box 
-
-
-  // OR flex "[" matrix "]" "
-
-
-  // GIVEN NUM ROWS * table row height??? 
-  // up to 50 ROWS 
-
-
-
-
-
-  // given div 
-
-  // left: [
-  
-  // table: (already present)
-
-  // right: ] 
-
-  // left bracket
-  // let left_bracket = document.createElement("span");
-  // left_bracket.innerHTML = "["; 
-
-
-  // target.parentNode.insertBefore(left_bracket, target); 
-}
-
 
 function make_table(target, matrix, m, n, bold){
   // target is location to put the matrix
@@ -852,7 +839,7 @@ function make_table(target, matrix, m, n, bold){
     }
   }
 
- target.classList.add("brackets");
+//  target.classList.add("brackets");
 }
 
 function reset_result(divs){
@@ -904,6 +891,11 @@ document.querySelector("#put-in-b-btn").addEventListener("click", () => {
 function make_matrix_with_values(result_2d, matrix_grid, m, n){
   // similar to make_matrix func, but assign values to the inputs 
 
+  if(typeof result_2d != "object"){
+    warning_msg("Determinant is a single value, not a matrix");
+    return;
+  }
+
   while(matrix_grid.hasChildNodes()){
     // remove old matrix, if present 
     matrix_grid.removeChild(matrix_grid.lastChild);
@@ -929,11 +921,6 @@ function make_matrix_with_values(result_2d, matrix_grid, m, n){
 
 
 }
-
-// document.documentElement.style.setProperty("--a-m", am_input); // adjust css var to create correct template rows/ cols after func compelte / format grid 
-// document.documentElement.style.setProperty("--a-n", an_input); 
-// matrix_result = [...result]; 
-// result_m = m, result_n =n; 
 
 // -------------------------- Small Err Checks ---------------------------
 function same_size(am, an, bm, bn){
@@ -1067,4 +1054,31 @@ function init_move(){
 // testing
 matrix_a = [[2,2], [2,2]];
 matrix_b = [[2,2], [2,2]];
+
 mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
+
+// let a = 25, b = 2; 
+
+// let product = new Array(a).fill(0).map(() => new Array(b).fill(0)); 
+
+// display_result_unary("det", 9, product, a, b, "");
+
+
+
+function brackets(target, m, n){
+  target.classList.add("brackets"); 
+  let scale_y = 2 * m; 
+  let margin_b = 8 * m; 
+  document.documentElement.style.setProperty("--bracket-y-scale", scale_y);
+  document.documentElement.style.setProperty("--margin-bottom", margin_b+"px");
+}
+
+function brackets_alt(target, m, n){
+  // a matrix has different row height, use different css var
+
+  target.classList.add("brackets-alt"); 
+  let scale_y = 2 * m; 
+  let margin_b = 8 * m; 
+  document.documentElement.style.setProperty("--bracket-y-scale-1", scale_y);
+  document.documentElement.style.setProperty("--margin-bottom-1", margin_b+"px");
+}

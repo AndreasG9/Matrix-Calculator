@@ -5,25 +5,18 @@
 }
 
 :root{
-  /* 
-  # rows, # columns, values determined by user input/ selected size 
-  height/ y scale of bracket dependent on size of selected matrix 
-  */ 
-  --m: 0;
-  --n: 0; 
-
+  /* # rows, # columns, values determined by user input/ specified size */
   --a-m:0;
   --a-n:0;
   --b-m:0; 
   --b-n:0; 
 
-  /* --bracket-y-scale: 1; 
-  --top1: 1px; 
+  --bracket-y-scale: 3; 
+  --bracket-x-scale: 1.5; 
+  --margin-bottom: 1px;
 
-  --small-bracket-y-scale: 1; 
-
-  --matrix-a-buttons-width: 1;  */
-
+  --bracket-y-scale-1: 0; 
+  --margin-bottom-1: 1px;
 }
 
 body{
@@ -42,7 +35,7 @@ table{
 }
 
 td {
-  font-size: 1.1em;
+  font-size: 1.2em;
   /* font-weight: bold; */
 }
 
@@ -203,7 +196,9 @@ td {
 }
 
 .main-container .solution-container{
-  border: 5px solid #6ba5a1 ;
+  border: 4px solid #558480;
+  /* border-color: #6ba5a1 rgb(121,154,185) rgb(121,154,185) #6ba5a1; 
+  border-color:#6ba5a1 rgb(121,154,185) #6ba5a1 rgb(121,154,185) ; */
   /* border-color: #6ba5a1 #ffffff;  */
   margin-top: 30px;
   min-width: 300px;
@@ -309,7 +304,46 @@ input[type=number] {
   text-align: center;
 }
 
-.res{
-  border: 2px solid black; 
+/* bad css / practice but gets the job done to display brackets of the correct row height*/ 
+
+.brackets{
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
 }
 
+.brackets::before{
+  content: "(";
+  align-self: center;
+  transform: scale(var(--bracket-x-scale),var(--bracket-y-scale));
+  margin-bottom: var(--margin-bottom);
+  color: 	#afc5c3;
+}
+.brackets::after{
+  content: ")";
+  transform: scale(var(--bracket-x-scale), var(--bracket-y-scale));
+  align-self: center;
+  margin-bottom: var(--margin-bottom);
+  color: 	#afc5c3;
+}
+
+.brackets-alt{
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+
+.brackets-alt::before{
+  content: "(";
+  align-self: center;
+  transform: scale(var(--bracket-x-scale),var(--bracket-y-scale-1));
+  margin-bottom: var(--margin-bottom-1);
+  color: 	#afc5c3;
+}
+.brackets-alt::after{
+  content: ")";
+  transform: scale(var(--bracket-x-scale), var(--bracket-y-scale-1));
+  align-self: center;
+  margin-bottom: var(--margin-bottom-1);
+  color: 	#afc5c3;
+}
