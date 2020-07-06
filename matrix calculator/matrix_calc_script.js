@@ -663,8 +663,8 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   
   // display matrix a
   make_table(divs[0], matrix_a, am, an, false);
-  if(am == bm) brackets(divs[0], am, bn);
-  else brackets_alt(divs[0], am, bn);
+  brackets(divs[0], am, bn);
+  // else brackets_alt(divs[0], am, bn);
 
   // display operator
   divs[1].innerHTML = operator; 
@@ -672,7 +672,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   // display matrix b 
   make_table(divs[2], matrix_b, bm, bn, false); 
   if(am == bm) brackets(divs[2], am, bn);
-  else brackets_alt(divs[2], am, bn);
+  else brackets_alt(divs[2], bm, bn);
 
   // display =
   divs[3].innerHTML = "="; 
@@ -691,12 +691,12 @@ function display_result_unary(char, result, matrix, m, n, option){
   console.log(result); 
 
   if(typeof result === "object"){
-    // for "put in a/b"'
+    // for "put in a/b" 
     matrix_result = [...result]; 
     result_m = m, result_n =n; 
   }
 
-  else matrix_result = result; 
+  else matrix_result = result; // a single value 
 
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
@@ -778,6 +778,7 @@ function dec_to_frac(fraction){
 
   let index = fraction.toString().indexOf(".");
   let places_after_decimal = fraction.toString().length - index-1;
+  console.log(places_after_decimal);
 
   let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
   let num = denom * fraction; 
@@ -851,6 +852,7 @@ function reset_result(divs){
 }
 
 // -------------------------- Misc ---------------------------
+
 // ------------------------- SWAP -----------------------------
 document.querySelector("#swap-btn").addEventListener("click", () => {
   // matrix A <=> matrix B  
@@ -880,15 +882,15 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
 // when result is displayed, the data is stored in the global var matrix_result, along with its m and n 
 
 document.querySelector("#put-in-a-btn").addEventListener("click", () => {
-  make_matrix_with_values(matrix_result, matrix_grid_a, result_m, result_n);
+  make_matrix_with_values("A", matrix_result, matrix_grid_a, result_m, result_n);
 });
 
 document.querySelector("#put-in-b-btn").addEventListener("click", () => {
   // put_in_ab("A", matrix_grid_b); 
-  make_matrix_with_values(matrix_result, matrix_grid_b, result_m, result_n);
+  make_matrix_with_values("B", matrix_result, matrix_grid_b, result_m, result_n);
 });
 
-function make_matrix_with_values(result_2d, matrix_grid, m, n){
+function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
   // similar to make_matrix func, but assign values to the inputs 
 
   if(typeof result_2d != "object"){
@@ -912,14 +914,40 @@ function make_matrix_with_values(result_2d, matrix_grid, m, n){
     matrix_grid.appendChild(input);
   } 
 
-  document.documentElement.style.setProperty("--a-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
-  document.documentElement.style.setProperty("--a-n", n); 
-  document.documentElement.style.setProperty("--b-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
-  document.documentElement.style.setProperty("--b-n", n); 
+  if(char == "A"){
+    document.documentElement.style.setProperty("--a-m", m); // adjust css var to create correct template rows/ cols after func compelte / format grid 
+    document.documentElement.style.setProperty("--a-n", n); 
+    am_input = m;
+    an_input = n; 
+  }
+
+  else{
+    document.documentElement.style.setProperty("--b-m", m);
+    document.documentElement.style.setProperty("--b-n", n); 
+    bm_input = m;
+    bn_input = n; 
+  }
 
   init_move(); // L and R arrow keys to move 
+}
 
+// ------------------------- Brackets -----------------------------
+function brackets(target, m, n){
+  target.classList.add("brackets"); 
+  let scale_y = 2 * m; 
+  let margin_b = 8 * m; 
+  document.documentElement.style.setProperty("--bracket-y-scale", scale_y);
+  document.documentElement.style.setProperty("--margin-bottom", margin_b+"px");
+}
 
+function brackets_alt(target, m, n){
+  // a matrix has different row height, use different css var
+
+  target.classList.add("brackets-alt"); 
+  let scale_y = 2 * m; 
+  let margin_b = 8 * m; 
+  document.documentElement.style.setProperty("--bracket-y-scale-1", scale_y);
+  document.documentElement.style.setProperty("--margin-bottom-1", margin_b+"px");
 }
 
 // -------------------------- Small Err Checks ---------------------------
@@ -1052,8 +1080,8 @@ function init_move(){
 
 
 // testing
-matrix_a = [[2,2], [2,2]];
-matrix_b = [[2,2], [2,2]];
+matrix_a = [[1,2], [3,4]];
+matrix_b = [[5,6], [7,8]];
 
 mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
 
@@ -1065,20 +1093,3 @@ mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2);
 
 
 
-function brackets(target, m, n){
-  target.classList.add("brackets"); 
-  let scale_y = 2 * m; 
-  let margin_b = 8 * m; 
-  document.documentElement.style.setProperty("--bracket-y-scale", scale_y);
-  document.documentElement.style.setProperty("--margin-bottom", margin_b+"px");
-}
-
-function brackets_alt(target, m, n){
-  // a matrix has different row height, use different css var
-
-  target.classList.add("brackets-alt"); 
-  let scale_y = 2 * m; 
-  let margin_b = 8 * m; 
-  document.documentElement.style.setProperty("--bracket-y-scale-1", scale_y);
-  document.documentElement.style.setProperty("--margin-bottom-1", margin_b+"px");
-}
