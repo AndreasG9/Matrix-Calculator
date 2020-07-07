@@ -224,11 +224,23 @@ td {
   border: 3px solid; 
   border-color: rgb(121,154,185) #ffffff #ffffff rgb(121,154,185); 
   padding: 3px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-container .solution-container #put-in-b-btn{
   margin-top: 5px;
+  width: 80px;
+  height: 30px;
 }
+
+.main-container .solution-container #put-in-a-btn{
+  width: 80px;
+  height: 30px;
+}
+
 
 .right-bracket{
   transform: scale(var(--bracket-x-scale), var(--bracket-y-scale-1));
