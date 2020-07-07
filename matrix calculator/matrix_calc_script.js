@@ -6,9 +6,6 @@ const DEFAULT_N = 2;
 const SQUARE_MAX = 36; 
 const POWER_MAX = 20; 
 
-// let matrix_grid_a = null, matrix_grid_b = null; 
-// let matrix_a = []; 
-// let matrix_b = []; 
 let matrix_grid_a = null, matrix_grid_b = null; 
 let am_input, an_input, bm_input, bn_input = 0; 
 
@@ -17,7 +14,6 @@ let matrix_result = [];
 let result_m = 0, result_n = 0; 
 
 // every other variable is kept inside its function (aside from two on bottom for movement w/ arrow keys)
-
 
 init_default(); 
 
@@ -713,7 +709,7 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   if(check_max(result, am, bn)) return; 
 
   // save data for "put in a/b"
-  // result always contains numbers (inputed fractions stored as decimals), copy by value 
+  // result always contains numbers (inputted fractions stored as decimals), copy by value 
   matrix_result = JSON.parse(JSON.stringify(result)); 
   result_m = am, result_n = bn;
 
@@ -764,7 +760,7 @@ function display_result_unary(char, result, matrix, m, n, option){
     if(check_max(result, m, n)) return; 
 
     // for "put in a/b" 
-    // result always contains numbers (inputed fractions stored as decimals), copy by value 
+    // result always contains numbers (inputted fractions stored as decimals), copy by value 
     matrix_result = JSON.parse(JSON.stringify(result)); 
     result_m = m, result_n = n; 
   }
@@ -933,6 +929,7 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
   matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
 
+
   display_matrix(bm_input, bn_input, am_input, an_input); // swap sizes if diff
 
   // sizes are now swapped, fill inputs 
@@ -940,12 +937,12 @@ document.querySelector("#swap-btn").addEventListener("click", () => {
   let index  = 0; // ab contains inputs from both matrices, keep index as sizes can differ 
 
   for(let i=0; i<matrix_b.length; ++i){
-    ab[index].value = matrix_b[i]; 
+    if(!isNaN(matrix_b[i])) ab[index].value = matrix_b[i]; // if empty, leave empty 
     ++index; 
   }
 
   for(let i=0; i<matrix_a.length; ++i){
-    ab[index].value = matrix_a[i]; 
+    if(!isNaN(matrix_a[i])) ab[index].value = matrix_a[i]; 
     ++index; 
   }
 
@@ -984,7 +981,7 @@ function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
     let input = document.createElement("input"); 
     //input.type="number"; 
     input.type="text";
-    input.value = result_1d[i]; 
+    input.value = result_1d[i];
     input.classList.add("move", "swap"); 
     matrix_grid.appendChild(input);
   } 
@@ -1216,4 +1213,4 @@ mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2);
 
 // let product = new Array(a).fill(0).map(() => new Array(b).fill(0)); 
 
-// display_result_unary("det", 9, product, a, b, "");
+// display_result_unary("det", 0, product, a, b, "");
