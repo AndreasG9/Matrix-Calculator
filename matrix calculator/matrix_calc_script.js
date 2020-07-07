@@ -775,7 +775,6 @@ function display_result_unary(char, result, matrix, m, n, option){
   show_result_box();   // make solution box visible 
 
   // 4 divs, 1: matrix a/b^power, 2: matrix-table, 3: =, 4: result
-  const wrapper = document.querySelector(".result-wrapper"); 
   const divs = document.querySelectorAll(".result-wrapper > div"); // return object containing those 4 divs 
   
   reset_result(divs); // clear old result, if present 
@@ -815,7 +814,7 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   else{
     // display table 
-    make_table_with_parens(divs[3], matrix, m, n, null, true, true);
+    make_table_with_parens(divs[3], result, m, n, null, true, true);
   }
 
 }
