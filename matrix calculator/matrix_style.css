@@ -294,6 +294,10 @@ input[type="number"] {
   font-size:18px;
 }
 
+input[type="text"] {
+  font-size:18px;
+}
+
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
@@ -303,6 +307,12 @@ input[type=number] {
   -moz-appearance: textfield;
   text-align: center;
 }
+
+input[type="text"] {
+  -moz-appearance: textfield;
+  text-align: center;
+}
+
 
 /* bad css / practice but gets the job done to display brackets of the correct row height*/ 
 

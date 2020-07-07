@@ -32,8 +32,11 @@ function init_default(){
     let input2 = document.createElement("input"); 
     input.classList.add("move");
     input2.classList.add("move");
-    input.type="number"; 
-    input2.type="number"; 
+    // input.type="number"; 
+    // input2.type="number"; 
+
+    input.type="text"; 
+    input2.type="text"; 
     
     matrix_grid_a.appendChild(input);
     matrix_grid_b.appendChild(input2);
@@ -149,7 +152,8 @@ function make_matrix(matrix_grid, m, n){
   for(i=0; i<(m*n); ++i){
     // create inputs for matrix, will set properties for css after 
     let input = document.createElement("input"); 
-    input.type="number"; 
+    //input.type="number"; 
+    input.type="text"; // will parse fractions to decimal 
     input.classList.add("move", "swap"); 
     matrix_grid.appendChild(input);
   } 
@@ -179,13 +183,51 @@ function read_input(matrix_grid, m, n){
 
   for(i=0; i<(m*n); ++i){
    // store input data, return matrix 
-    matrix_temp.push(parseFloat(matrix_grid.elements[i].value)); 
+
+   // matrix_temp.push(parseFloat(matrix_grid.elements[i].value)); 
+
+
+    let value = matrix_grid.elements[i].value; 
+
+    if(!isNaN(value)) matrix_temp.push(parseFloat(matrix_grid.elements[i].value)); // store as a decimal 
+
+    else {
+      // attempt to parse num "/" num --> store as decimal 
+
+      let res = parse_fraction(value);
+      matrix_temp.push(res); // if "err" added to the matrix to be returned, will result in the err prompt 
+    }
+
   }
+
+  console.log(`MATRIX TEMP: ${matrix_temp}`);
 
   return matrix_temp; 
 }
 
+function parse_fraction(value){
+  // num "/" num --> store as decimal 
 
+  let res = 0; 
+
+  let split = value.split("/");
+  if((split.length > 2) || split.length == 1) return "err"; 
+
+  split.forEach(element => {
+    // one of the two elements in the arr is not a number 
+    // or an extra "/" , which results in an err 
+
+    if((isNaN(element) || element == "")) return "err";
+  });
+
+  // safe to divide 
+  let decimal = split[0] / split[1];
+
+  if(decimal == Infinity) res = "err"; // one final check 
+  else res = decimal;
+
+  return res; // return number or "err"
+}
 
 // -------------------------- Compute Binary Operation ---------------------------
 document.querySelector("#compute-btn").addEventListener("click", () => {
@@ -193,6 +235,12 @@ document.querySelector("#compute-btn").addEventListener("click", () => {
 
   matrix_a = read_input(matrix_grid_a, am_input, an_input); 
   matrix_b = read_input(matrix_grid_b, bm_input, bn_input); 
+
+  if(matrix_a.includes("err") || matrix_b.includes("err")) {
+    // could not parse 
+    warning_msg("Invalid Input: whole numbers, decimals, or fractions only"); 
+    return; 
+  }
 
   let err = missing_element(matrix_a, matrix_b); // one or more inputs are missing 
   if(err) return; 
@@ -364,6 +412,12 @@ function calc_matrix_power(char, matrix_grid, m, n, power){
 
   let matrix = read_input(matrix_grid, m, n); 
   if(missing_element_single_matrix(matrix)) return; // err, missing element
+
+  if(matrix.includes("err")) {
+    // could not parse 
+    warning_msg("Invalid Input: whole numbers, decimals, or fractions only"); 
+    return; 
+  }
 
   if((power > POWER_MAX) || power < -POWER_MAX){
     warning_msg(`Exceed POWER_MAX: ${POWER_MAX}`); 
@@ -537,6 +591,12 @@ function determinant(char, matrix_grid, m, n){
   let matrix = read_input(matrix_grid, m, n); 
   if(missing_element_single_matrix(matrix)) return; // err, missing element
 
+  if(matrix.includes("err")) {
+    // could not parse 
+    warning_msg("Invalid Input: whole numbers, decimals, or fractions only"); 
+    return; 
+  }
+
   let matrix_2d = make_2d(matrix, m, n); 
 
   if(matrix_2d.length == 1){
@@ -627,6 +687,12 @@ function transpose(char, matrix_grid, m, n){
   let matrix = read_input(matrix_grid, m, n); 
   if(missing_element_single_matrix(matrix)) return; // err, missing element
 
+  if(matrix.includes("err")) {
+    // could not parse 
+    warning_msg("Invalid Input: whole numbers, decimals, or fractions only"); 
+    return; 
+  }
+
   let matrix_2d = make_2d(matrix, m, n); 
 
   let transpose = new Array(n).fill(0).map(() => new Array(m).fill(0)); // 2x3 transpose will be 3x2 ... 
@@ -700,13 +766,14 @@ function display_result_unary(char, result, matrix, m, n, option){
     // for "put in a/b" 
     matrix_result = [...result]; 
     result_m = m, result_n =n; 
+
   }
 
   else matrix_result = result; // a single value 
 
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
-   if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+  if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
 
   show_result_box();   // make solution box visible 
 
@@ -729,9 +796,12 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   // display matrix/table w/ sup
   make_table(divs[1], matrix, m, n, false);
+  //brackets(divs[1], m , n);
+
   divs[1].appendChild(super_script);
   divs[1].style.display = "flex"; 
-  brackets(divs[1], m , n);
+  //divs[1].parentNode.insertBefore(super_script, divs[1].nextSibling);
+
 
   // display = 
   divs[2].innerHTML = "="; 
@@ -755,7 +825,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   else{
     // display table 
     make_table(divs[3], result, m, n, true); 
-    brackets(divs[1], m , n);
+    brackets(divs[3], m , n);
   }
 
 }
@@ -1098,7 +1168,7 @@ function init_move(){
 
   for(let i=0; i<inputs.length; ++i)
     // left and right arrow to "move" through matrix 
-    inputs[i].addEventListener("keydown", function (e) {
+    inputs[i].addEventListener("keyup", function (e) {
   
       if(e.keyCode == 37) if(this.previousElementSibling) this.previousElementSibling.focus(); // left arrow 
 
@@ -1107,8 +1177,12 @@ function init_move(){
 }
 
 
+
+
+
 // testing
 matrix_a = [[1,2], [3,4]];
+//matrix_a = [[1,1/2], [3,4]];
 matrix_b = [[5,6], [7,8]];
 
 mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
