@@ -713,10 +713,13 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   if(check_max(result, am, bn)) return; 
 
   // save data for "put in a/b"
-  matrix_result = [...result];
+  // result always contains numbers (inputed fractions stored as decimals), copy by value 
+  matrix_result = JSON.parse(JSON.stringify(result)); 
   result_m = am, result_n = bn;
 
-  //convert_to_frac(result, an, bm);
+  convert_to_frac(matrix_a, an, bm);
+  convert_to_frac(matrix_b, an, bm);
+  convert_to_frac(result, an, bm);
 
   show_result_box();   // make solution box visible 
 
@@ -759,18 +762,18 @@ function display_result_unary(char, result, matrix, m, n, option){
   if(typeof result === "object"){
 
     if(check_max(result, m, n)) return; 
-    // for "put in a/b" 
-    // result always contains numbers (inputed fractions stored as decimals)
 
-    matrix_result = [...result]; 
-    result_m = m, result_n =n; 
+    // for "put in a/b" 
+    // result always contains numbers (inputed fractions stored as decimals), copy by value 
+    matrix_result = JSON.parse(JSON.stringify(result)); 
+    result_m = m, result_n = n; 
   }
 
   else matrix_result = result; // a single value 
 
   // convert elements to "fractions" if rational 
   convert_to_frac(matrix, m, n);
-  if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func)
+  if(typeof result === "object") convert_to_frac(result, m, n); // if result 2d matrix contains any decimals, will convert to fractions (explained inside func) 
 
   show_result_box();   // make solution box visible 
 
@@ -846,7 +849,7 @@ function dec_to_frac(decimal){
   let index = decimal.toString().indexOf(".");
   let places_after_decimal = decimal.toString().length - index-1;
 
-  if(places_after_decimal >= 16) return decimal.toFixed(4); // repeating, num too high, will not fully simplify 
+  if(places_after_decimal >= 16) return decimal.toFixed(6); // repeating, num too high, will not fully simplify, TODO 
 
   let denom = Math.pow(10, places_after_decimal); // 10^places_after_decimal
   let num = denom * decimal; 
@@ -909,7 +912,6 @@ function make_table(target, matrix, m, n, bold){
     }
   }
 
-//  target.classList.add("brackets");
 }
 
 function reset_result(divs){
@@ -957,12 +959,13 @@ document.querySelector("#put-in-a-btn").addEventListener("click", () => {
 });
 
 document.querySelector("#put-in-b-btn").addEventListener("click", () => {
-  // put_in_ab("A", matrix_grid_b); 
   make_matrix_with_values("B", matrix_result, matrix_grid_b, result_m, result_n);
 });
 
 function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
   // similar to make_matrix func, but assign values to the inputs 
+
+  console.log(result_2d);
 
   if(typeof result_2d != "object"){
     warning_msg("Determinant is a single value, not a matrix");
@@ -1005,9 +1008,8 @@ function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
   init_move(); // L and R arrow keys to move 
 }
 
+
 // ------------------------- Parens -----------------------------
-
-
 function make_table_with_parens(target, matrix, m, n, super_script, bold, alt){
   // display matrix with parens, options for super_script(T, matrix power, or null), bold table data, and if to use alt var 
 
@@ -1053,7 +1055,6 @@ function make_table_with_parens(target, matrix, m, n, super_script, bold, alt){
   make_table(box, matrix, m, n, bold);
   box.appendChild(right);
 }
-
 
 
 // -------------------------- Small Err Checks ---------------------------
@@ -1206,8 +1207,8 @@ function init_move(){
 
 // testing
 matrix_a = [[1,2], [3,4]];
-//matrix_a = [[1,1/2], [3,4]];
-matrix_b = [[5,6], [7,8]];
+matrix_a = [[1/2,1/2], [2,2]];
+matrix_b = [[4,5], [6,7]];
 
 mul_matrix(matrix_a, matrix_b, 2, 2, 2, 2); 
 
