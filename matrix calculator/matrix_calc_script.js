@@ -183,9 +183,7 @@ function read_input(matrix_grid, m, n){
 
   for(i=0; i<(m*n); ++i){
    // store input data, return matrix 
-
    // matrix_temp.push(parseFloat(matrix_grid.elements[i].value)); 
-
 
     let value = matrix_grid.elements[i].value; 
 
@@ -197,18 +195,13 @@ function read_input(matrix_grid, m, n){
       let res = parse_fraction(value);
       matrix_temp.push(res); // if "err" added to the matrix to be returned, will result in the err prompt 
     }
-
   }
-
-  console.log(`MATRIX TEMP: ${matrix_temp}`);
 
   return matrix_temp; 
 }
 
 function parse_fraction(value){
   // num "/" num --> store as decimal 
-
-  let res = 0; 
 
   let split = value.split("/");
   if((split.length > 2) || split.length == 1) return "err"; 
@@ -220,8 +213,11 @@ function parse_fraction(value){
     if((isNaN(element) || element == "")) return "err";
   });
 
-  // safe to divide 
+
+  // relatively safe to divide 
   let decimal = split[0] / split[1];
+
+  let res = 0; 
 
   if(decimal == Infinity) res = "err"; // one final check 
   else res = decimal;
@@ -731,24 +727,25 @@ function display_result_binary(result, matrix_a, matrix_b, am, an, bm, bn, opera
   reset_result(divs); // clear old result, if present 
   
   // display matrix a
-  make_table(divs[0], matrix_a, am, an, false);
-  brackets(divs[0], am, bn);
+  make_table_with_parens(divs[0], matrix_a, am, an, null, false, false);
+
+  // make_table(divs[0], matrix_a, am, an, false);
+  // brackets(divs[0], am, bn);
   // else brackets_alt(divs[0], am, bn);
 
   // display operator
   divs[1].innerHTML = operator; 
 
-  // display matrix b 
-  make_table(divs[2], matrix_b, bm, bn, false); 
-  if(am == bm) brackets(divs[2], am, bn);
-  else brackets_alt(divs[2], bm, bn);
+
+  // display matrix b, use alt css var if height of this matrix differs from A 
+  am == bm ? alt_var = true : false;  
+  make_table_with_parens(divs[2], matrix_b, bm, bn, null, false, alt_var);
 
   // display =
   divs[3].innerHTML = "="; 
 
   // display result 
-  make_table(divs[4], result, am, bn, true);
-  brackets(divs[4], am, bn);
+  make_table_with_parens(divs[4], result, am, bn, null, true, true);
 }
 
 // -------------------------- Display result from unary op ---------------------------
@@ -762,11 +759,11 @@ function display_result_unary(char, result, matrix, m, n, option){
   if(typeof result === "object"){
 
     if(check_max(result, m, n)) return; 
-
     // for "put in a/b" 
+    // result always contains numbers (inputed fractions stored as decimals)
+
     matrix_result = [...result]; 
     result_m = m, result_n =n; 
-
   }
 
   else matrix_result = result; // a single value 
@@ -795,13 +792,7 @@ function display_result_unary(char, result, matrix, m, n, option){
   else divs[0].innerHTML = `&nbsp;${char}<sup>${option}</sup>&nbsp;&nbsp;&#x2192;`; 
 
   // display matrix/table w/ sup
-  make_table(divs[1], matrix, m, n, false);
-  //brackets(divs[1], m , n);
-
-  divs[1].appendChild(super_script);
-  divs[1].style.display = "flex"; 
-  //divs[1].parentNode.insertBefore(super_script, divs[1].nextSibling);
-
+  make_table_with_parens(divs[1], matrix, m, n, super_script, false, false);
 
   // display = 
   divs[2].innerHTML = "="; 
@@ -824,11 +815,11 @@ function display_result_unary(char, result, matrix, m, n, option){
 
   else{
     // display table 
-    make_table(divs[3], result, m, n, true); 
-    brackets(divs[3], m , n);
+    make_table_with_parens(divs[3], matrix, m, n, null, true, true);
   }
 
 }
+
 
 function convert_to_frac(matrix_2d, m, n){
   // convert decimal values to fractions, if rational 
@@ -889,8 +880,9 @@ function show_result_box(){
   const show = document.querySelectorAll(".show");
   for(let i=0; i<show.length; ++i){
 
-    if(show[i].classList.contains("brackets")) show[i].classList.remove("brackets");
-    if(show[i].classList.contains("brackets-alt")) show[i].classList.remove("brackets-alt");
+    if(show[i].classList.contains("parens")) show[i].classList.remove("parens");
+    if(show[i].classList.contains("parens-alt")) show[i].classList.remove("parens-alt");
+    if(show[i].classList.contains("super-script")) show[i].classList.remove("super-script");
   }
 }
 
@@ -988,7 +980,8 @@ function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
   for(i=0; i<(m*n); ++i){
     // create inputs for matrix, will set properties for css after 
     let input = document.createElement("input"); 
-    input.type="number"; 
+    //input.type="number"; 
+    input.type="text";
     input.value = result_1d[i]; 
     input.classList.add("move", "swap"); 
     matrix_grid.appendChild(input);
@@ -1013,24 +1006,56 @@ function make_matrix_with_values(char, result_2d, matrix_grid, m, n){
   init_move(); // L and R arrow keys to move 
 }
 
-// ------------------------- Brackets -----------------------------
-function brackets(target, m, n){
-  target.classList.add("brackets"); 
+// ------------------------- Parens -----------------------------
+
+
+function make_table_with_parens(target, matrix, m, n, super_script, bold, alt){
+  // display matrix with parens, options for super_script(T, matrix power, or null), bold table data, and if to use alt var 
+
+  let left = document.createElement("span");
+  let right = document.createElement("span");
+  left.innerHTML = "(";
+  right.innerHTML = ")";
+
   let scale_y = 2 * m; 
   let margin_b = 8 * m; 
-  document.documentElement.style.setProperty("--bracket-y-scale", scale_y);
-  document.documentElement.style.setProperty("--margin-bottom", margin_b+"px");
+
+  if(alt){
+    // default css var 
+    left.classList.add("parens");
+    right.classList.add("parens");
+    document.documentElement.style.setProperty("--bracket-y-scale", scale_y);
+    document.documentElement.style.setProperty("--margin-bottom", margin_b+"px");
+  }
+
+  else{
+    // use alt css var 
+    left.classList.add("parens-alt");
+    right.classList.add("parens-alt");
+    document.documentElement.style.setProperty("--bracket-y-scale-1", scale_y);
+    document.documentElement.style.setProperty("--margin-bottom-1", margin_b+"px");
+  }
+
+
+  if(super_script != null){
+    // unary operation, show super_script 
+    right.appendChild(super_script);
+    super_script.classList.add("super-script");
+  }
+
+
+  // create div, inside: left span, matrix, right span (with superscript if present) 
+  let box = document.createElement("div");
+  box.style.display = "flex";
+  box.style.margin = "10px";
+  target.appendChild(box);
+
+  box.appendChild(left);
+  make_table(box, matrix, m, n, bold);
+  box.appendChild(right);
 }
 
-function brackets_alt(target, m, n){
-  // a matrix has different row height, use different css var
 
-  target.classList.add("brackets-alt"); 
-  let scale_y = 2 * m; 
-  let margin_b = 8 * m; 
-  document.documentElement.style.setProperty("--bracket-y-scale-1", scale_y);
-  document.documentElement.style.setProperty("--margin-bottom-1", margin_b+"px");
-}
 
 // -------------------------- Small Err Checks ---------------------------
 function same_size(am, an, bm, bn){

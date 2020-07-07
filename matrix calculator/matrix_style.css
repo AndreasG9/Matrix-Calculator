@@ -230,6 +230,14 @@ td {
   margin-top: 5px;
 }
 
+.right-bracket{
+  transform: scale(var(--bracket-x-scale), var(--bracket-y-scale-1));
+  transform: scale(1, 4);
+  align-self: center;
+  margin-bottom: var(--margin-bottom-1);
+  color: 	#afc5c3;
+}
+
 .warning-box{
   width: 800px;
   max-width: 80%;
@@ -314,46 +322,24 @@ input[type="text"] {
 }
 
 
-/* bad css / practice but gets the job done to display brackets of the correct row height*/ 
 
-.brackets{
-  display: flex;
-  flex-direction: row;
-  margin: 10px;
-}
-
-.brackets::before{
-  content: "(";
-  align-self: center;
-  transform: scale(var(--bracket-x-scale),var(--bracket-y-scale));
-  margin-bottom: var(--margin-bottom);
-  color: 	#afc5c3;
-}
-.brackets::after{
-  content: ")";
+/* parens */ 
+.parens{
   transform: scale(var(--bracket-x-scale), var(--bracket-y-scale));
   align-self: center;
   margin-bottom: var(--margin-bottom);
   color: 	#afc5c3;
 }
 
-.brackets-alt{
-  display: flex;
-  flex-direction: row;
-  margin: 10px;
-}
-
-.brackets-alt::before{
-  content: "(";
-  align-self: center;
-  transform: scale(var(--bracket-x-scale),var(--bracket-y-scale-1));
-  margin-bottom: var(--margin-bottom-1);
-  color: 	#afc5c3;
-}
-.brackets-alt::after{
-  content: ")";
+.parens-alt{
   transform: scale(var(--bracket-x-scale), var(--bracket-y-scale-1));
   align-self: center;
   margin-bottom: var(--margin-bottom-1);
   color: 	#afc5c3;
+}
+
+.super-script{
+  font-size: .5em;
+  font-weight: normal;
+  color: #000000;
 }
